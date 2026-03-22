@@ -48,21 +48,18 @@ tailwind.config = {
   .page.active { display: block; }
   .revenue-clickable { cursor: pointer; position: relative; }
   .revenue-clickable:hover { opacity: 0.85; }
-  .revenue-clickable::after { content: 'Нажми → все месяцы'; position: absolute; bottom: -18px; left: 0; font-size: 10px; color: rgba(255,255,255,0.25); opacity: 0; transition: opacity 0.2s; }
+  .revenue-clickable::after { content: 'Нажми — все месяцы'; position: absolute; bottom: -18px; left: 0; font-size: 10px; color: rgba(255,255,255,0.25); opacity: 0; transition: opacity 0.2s; }
   .revenue-clickable:hover::after { opacity: 1; }
-  /* Calendar */
   .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
   .cal-cell { min-height: 80px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 6px; font-size: 11px; transition: all 0.2s; }
   .cal-cell:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
   .cal-cell.today { border-color: #00d4ff; background: rgba(0,212,255,0.05); }
   .cal-event { font-size: 9px; padding: 2px 4px; border-radius: 3px; margin-top: 2px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  /* Funnel */
   .funnel-step { position: relative; transition: all 0.3s; }
   .funnel-step:hover { transform: scale(1.02); }
-  /* War room */
-  .metric-ring { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-  /* Speed dial */
   .speed-number { font-variant-numeric: tabular-nums; }
+  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .pulse-dot { animation: pulse-dot 2s infinite; }
 </style>
 </head>
 <body class="font-sans text-white min-h-screen">
@@ -74,10 +71,9 @@ tailwind.config = {
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center font-black text-lg">M</div>
       <div>
         <h1 class="text-xl font-bold tracking-tight">МОНОПОЛИЕ</h1>
-        <p class="text-xs text-white/40">Бизнес-Империя • Command Center</p>
+        <p class="text-xs text-white/40">Бизнес-Империя — Command Center</p>
       </div>
     </div>
-    <!-- Nav Tabs -->
     <nav class="flex gap-1 bg-white/5 rounded-xl p-1">
       <button onclick="switchTab('dashboard')" class="tab-btn text-xs px-4 py-2 rounded-lg tab-active" data-tab="dashboard">Дашборд</button>
       <button onclick="switchTab('calendar')" class="tab-btn text-xs px-4 py-2 rounded-lg text-white/40" data-tab="calendar">Планирование</button>
@@ -87,8 +83,8 @@ tailwind.config = {
     </nav>
     <div class="flex items-center gap-4">
       <div class="text-right">
-        <p class="text-xs text-white/40">Март 2026</p>
-        <p class="text-sm font-semibold text-neon-green">● Live</p>
+        <p class="text-xs text-white/40" id="headerMonth">Загрузка...</p>
+        <p class="text-sm font-semibold text-neon-green"><span class="inline-block w-2 h-2 rounded-full bg-neon-green pulse-dot mr-1"></span>Live</p>
       </div>
       <div class="w-9 h-9 rounded-full bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-sm font-bold">T</div>
     </div>
@@ -103,28 +99,24 @@ tailwind.config = {
   <div class="glass rounded-2xl p-6 glow-blue">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div class="revenue-clickable" onclick="openMonthlyModal()">
-        <p class="text-sm text-white/50 mb-1">Общий доход за март</p>
+        <p class="text-sm text-white/50 mb-1" id="revLabel">Загрузка...</p>
         <div class="flex items-baseline gap-2">
-          <span class="text-5xl font-black gradient-text animate-in">2 946 000</span>
+          <span class="text-5xl font-black gradient-text animate-in" id="revAmount">—</span>
           <span class="text-xl text-white/40">₸</span>
         </div>
-        <p class="text-sm text-neon-green mt-1">↑ 23.4% vs февраль</p>
+        <p class="text-sm mt-1" id="revChange"></p>
       </div>
       <div class="flex gap-6">
         <div class="text-center">
-          <p class="text-3xl font-bold text-white">7</p>
+          <p class="text-3xl font-bold text-white" id="statNiches">7</p>
           <p class="text-xs text-white/40">Ниш</p>
         </div>
         <div class="text-center">
-          <p class="text-3xl font-bold text-white">18</p>
-          <p class="text-xs text-white/40">Аккаунтов</p>
-        </div>
-        <div class="text-center">
-          <p class="text-3xl font-bold text-white">61.6K</p>
+          <p class="text-3xl font-bold text-white" id="statSubs">—</p>
           <p class="text-xs text-white/40">Подписчиков</p>
         </div>
         <div class="text-center">
-          <p class="text-3xl font-bold text-white">214</p>
+          <p class="text-3xl font-bold text-white" id="statContent">—</p>
           <p class="text-xs text-white/40">Контент/мес</p>
         </div>
       </div>
@@ -132,48 +124,38 @@ tailwind.config = {
     <!-- Progress to goal -->
     <div class="mt-5">
       <div class="flex justify-between text-xs text-white/40 mb-2">
-        <span>Прогресс к цели</span>
-        <span>2.95M / 45M ₸</span>
+        <span>Прогресс к цели: 1M ₸/мес</span>
+        <span id="goalProgress">0 / 1M ₸</span>
       </div>
       <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-        <div class="progress-bar h-full rounded-full" style="width: 6.55%"></div>
+        <div class="progress-bar h-full rounded-full" id="goalBar" style="width: 0%"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Speed Metrics (Elon style) -->
+<!-- Speed Metrics -->
 <section class="max-w-[1600px] mx-auto px-6 pt-4">
-  <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="glass rounded-xl p-4">
       <p class="text-[10px] text-white/40 uppercase tracking-wider">Сегодня</p>
-      <p class="text-xl font-bold mt-1 speed-number">98 200 ₸</p>
-      <p class="text-[10px] text-neon-green">↑ 12%</p>
+      <p class="text-xl font-bold mt-1 speed-number" id="speedToday">—</p>
+      <p class="text-[10px]" id="speedTodayChange"></p>
     </div>
     <div class="glass rounded-xl p-4">
       <p class="text-[10px] text-white/40 uppercase tracking-wider">Контент</p>
-      <p class="text-xl font-bold mt-1 speed-number">8 / 12</p>
-      <p class="text-[10px] text-neon-blue">67% плана</p>
+      <p class="text-xl font-bold mt-1 speed-number" id="speedContent">—</p>
+      <p class="text-[10px] text-neon-blue" id="speedContentPct"></p>
     </div>
     <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">Подписчики</p>
-      <p class="text-xl font-bold mt-1 speed-number">+347</p>
+      <p class="text-[10px] text-white/40 uppercase tracking-wider">Новые подписчики</p>
+      <p class="text-xl font-bold mt-1 speed-number" id="speedSubs">—</p>
       <p class="text-[10px] text-neon-purple">за сегодня</p>
     </div>
     <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">Конверсия</p>
-      <p class="text-xl font-bold mt-1 speed-number">4.2%</p>
-      <p class="text-[10px] text-neon-green">↑ 0.3%</p>
-    </div>
-    <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">LTV клиента</p>
-      <p class="text-xl font-bold mt-1 speed-number">127K ₸</p>
-      <p class="text-[10px] text-neon-orange">средний</p>
-    </div>
-    <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">Burn Rate</p>
-      <p class="text-xl font-bold mt-1 speed-number">180K ₸</p>
-      <p class="text-[10px] text-white/30">расходы/мес</p>
+      <p class="text-[10px] text-white/40 uppercase tracking-wider">USD эквивалент</p>
+      <p class="text-xl font-bold mt-1 speed-number" id="speedUsd">—</p>
+      <p class="text-[10px] text-white/30">общий доход</p>
     </div>
   </div>
 </section>
@@ -182,189 +164,9 @@ tailwind.config = {
 <section class="max-w-[1600px] mx-auto px-6 pt-6">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-bold">Ниши</h2>
-    <div class="flex gap-2">
-      <button class="text-xs px-3 py-1.5 rounded-lg glass tab-active">Все</button>
-      <button class="text-xs px-3 py-1.5 rounded-lg glass text-white/40">По доходу</button>
-      <button class="text-xs px-3 py-1.5 rounded-lg glass text-white/40">По росту</button>
-    </div>
   </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-
-    <!-- VibeCoder -->
-    <div class="glass rounded-2xl p-5 niche-card glow-blue">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-blue/20 flex items-center justify-center text-lg">⚡</div>
-          <div>
-            <h3 class="font-bold text-sm">VibeCoder</h3>
-            <p class="text-xs text-white/40">Обучение вайбкодингу</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 31%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold text-neon-blue">381K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">12.4K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Контент</span><span class="font-medium">48 / мес</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-        <span class="platform-tag bg-red-500/20 text-red-400">YouTube</span>
-        <span class="platform-tag bg-pink-500/20 text-pink-400">TikTok</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#00d4ff" data-values="144,185,234,275,324,381"></canvas></div>
-    </div>
-
-    <!-- AI Sites -->
-    <div class="glass rounded-2xl p-5 niche-card glow-purple">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-purple/20 flex items-center justify-center text-lg">🌐</div>
-          <div>
-            <h3 class="font-bold text-sm">AI Sites</h3>
-            <p class="text-xs text-white/40">Сайты под ключ</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 18%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold text-neon-purple">540K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">8.1K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Проекты</span><span class="font-medium">23 сделано</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-pink-500/20 text-pink-400">Instagram</span>
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-        <span class="platform-tag bg-green-500/20 text-green-400">Авито</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#a855f7" data-values="135,261,315,248,338,540"></canvas></div>
-    </div>
-
-    <!-- AI Apps -->
-    <div class="glass rounded-2xl p-5 niche-card glow-green">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-green/20 flex items-center justify-center text-lg">📱</div>
-          <div>
-            <h3 class="font-bold text-sm">AI Apps</h3>
-            <p class="text-xs text-white/40">Мобильные приложения</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 42%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold text-neon-green">810K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">4.7K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Проекты</span><span class="font-medium">8 сделано</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-        <span class="platform-tag bg-indigo-500/20 text-indigo-400">LinkedIn</span>
-        <span class="platform-tag bg-orange-500/20 text-orange-400">Хабр</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#10b981" data-values="90,180,293,405,585,810"></canvas></div>
-    </div>
-
-    <!-- AI Bots -->
-    <div class="glass rounded-2xl p-5 niche-card glow-cyan">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-cyan/20 flex items-center justify-center text-lg">🤖</div>
-          <div>
-            <h3 class="font-bold text-sm">AI Bots</h3>
-            <p class="text-xs text-white/40">Боты и автоматизация</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 27%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold text-neon-cyan">414K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">6.3K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Ботов</span><span class="font-medium">34 активных</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-        <span class="platform-tag bg-red-500/20 text-red-400">YouTube</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#06b6d4" data-values="171,189,225,279,338,414"></canvas></div>
-    </div>
-
-    <!-- AI Design -->
-    <div class="glass rounded-2xl p-5 niche-card glow-pink">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-pink/20 flex items-center justify-center text-lg">🎨</div>
-          <div>
-            <h3 class="font-bold text-sm">AI Design</h3>
-            <p class="text-xs text-white/40">Дизайн через ИИ</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 15%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold text-neon-pink">288K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">11.2K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Работ</span><span class="font-medium">156 в портфолио</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-pink-500/20 text-pink-400">Instagram</span>
-        <span class="platform-tag bg-indigo-500/20 text-indigo-400">Behance</span>
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#ec4899" data-values="158,171,189,216,243,288"></canvas></div>
-    </div>
-
-    <!-- AI Content -->
-    <div class="glass rounded-2xl p-5 niche-card glow-orange">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-orange/20 flex items-center justify-center text-lg">📝</div>
-          <div>
-            <h3 class="font-bold text-sm">AI Content</h3>
-            <p class="text-xs text-white/40">Контент для бизнеса</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 22%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold text-neon-orange">342K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">15.8K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Клиенты</span><span class="font-medium">12 активных</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-pink-500/20 text-pink-400">Instagram</span>
-        <span class="platform-tag bg-purple-500/20 text-purple-400">TikTok</span>
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#f59e0b" data-values="126,153,189,230,279,342"></canvas></div>
-    </div>
-
-    <!-- AI SaaS -->
-    <div class="glass rounded-2xl p-5 niche-card glow-red">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-neon-red/20 flex items-center justify-center text-lg">🚀</div>
-          <div>
-            <h3 class="font-bold text-sm">AI SaaS</h3>
-            <p class="text-xs text-white/40">Свои микро-продукты</p>
-          </div>
-        </div>
-        <span class="text-xs text-neon-green font-medium">↑ 56%</span>
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">MRR</span><span class="font-semibold text-neon-red">171K ₸</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Пользователи</span><span class="font-medium">2.1K</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Продуктов</span><span class="font-medium">3 запущено</span></div>
-      </div>
-      <div class="flex gap-1.5 mt-3">
-        <span class="platform-tag bg-orange-500/20 text-orange-400">ProductHunt</span>
-        <span class="platform-tag bg-gray-500/20 text-gray-400">X/Twitter</span>
-        <span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span>
-      </div>
-      <div class="mt-3 h-8"><canvas class="spark" data-color="#ef4444" data-values="23,36,54,81,117,171"></canvas></div>
-    </div>
-
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="nicheCards">
+    <!-- Generated dynamically -->
   </div>
 </section>
 
@@ -374,69 +176,19 @@ tailwind.config = {
     <div class="glass rounded-2xl p-5 lg:col-span-2">
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-bold">Рост дохода</h3>
-        <div class="flex gap-2">
-          <button class="text-xs px-3 py-1 rounded-lg glass tab-active">6 мес</button>
-          <button class="text-xs px-3 py-1 rounded-lg glass text-white/40">12 мес</button>
-        </div>
       </div>
       <canvas id="revenueChart" height="180"></canvas>
     </div>
     <div class="glass rounded-2xl p-5">
       <h3 class="font-bold mb-4">Доля по нишам</h3>
       <canvas id="nicheChart" height="200"></canvas>
-      <div class="mt-4 space-y-2">
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-neon-green"></div><span class="text-white/60">AI Apps</span></div>
-          <span class="font-medium">27.5%</span>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-neon-purple"></div><span class="text-white/60">AI Sites</span></div>
-          <span class="font-medium">18.3%</span>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-neon-cyan"></div><span class="text-white/60">AI Bots</span></div>
-          <span class="font-medium">14.1%</span>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-neon-blue"></div><span class="text-white/60">VibeCoder</span></div>
-          <span class="font-medium">12.9%</span>
-        </div>
+      <div class="mt-4 space-y-2" id="nicheLegend">
+        <!-- Generated dynamically -->
       </div>
     </div>
   </div>
 </section>
 
-<!-- Platform Table -->
-<section class="max-w-[1600px] mx-auto px-6 pb-8">
-  <div class="glass rounded-2xl p-5">
-    <h3 class="font-bold mb-4">Аккаунты по платформам</h3>
-    <div class="overflow-x-auto scrollbar-hide">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="text-white/40 text-xs border-b border-white/5">
-            <th class="text-left py-3 font-medium">Платформа</th>
-            <th class="text-left py-3 font-medium">Аккаунт</th>
-            <th class="text-right py-3 font-medium">Подписчики</th>
-            <th class="text-right py-3 font-medium">Просмотры/мес</th>
-            <th class="text-right py-3 font-medium">Контент/мес</th>
-            <th class="text-right py-3 font-medium">Доход</th>
-            <th class="text-right py-3 font-medium">Рост</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-white/5">
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span></td><td class="py-3 font-medium">@vibecoder_kz</td><td class="py-3 text-right">12.4K</td><td class="py-3 text-right">89K</td><td class="py-3 text-right">30</td><td class="py-3 text-right text-neon-green">246K ₸</td><td class="py-3 text-right text-neon-green">↑ 8.2%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span></td><td class="py-3 font-medium">@ai_sites_studio</td><td class="py-3 text-right">5.3K</td><td class="py-3 text-right">34K</td><td class="py-3 text-right">15</td><td class="py-3 text-right text-neon-green">171K ₸</td><td class="py-3 text-right text-neon-green">↑ 5.1%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-blue-500/20 text-blue-400">Telegram</span></td><td class="py-3 font-medium">@ai_bots_factory</td><td class="py-3 text-right">6.3K</td><td class="py-3 text-right">41K</td><td class="py-3 text-right">20</td><td class="py-3 text-right text-neon-green">189K ₸</td><td class="py-3 text-right text-neon-green">↑ 12%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-red-500/20 text-red-400">YouTube</span></td><td class="py-3 font-medium">VibeCoder</td><td class="py-3 text-right">3.2K</td><td class="py-3 text-right">156K</td><td class="py-3 text-right">8</td><td class="py-3 text-right text-neon-green">135K ₸</td><td class="py-3 text-right text-neon-green">↑ 34%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-pink-500/20 text-pink-400">Instagram</span></td><td class="py-3 font-medium">@ai.design.studio</td><td class="py-3 text-right">11.2K</td><td class="py-3 text-right">210K</td><td class="py-3 text-right">25</td><td class="py-3 text-right text-neon-green">288K ₸</td><td class="py-3 text-right text-neon-green">↑ 15%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-pink-500/20 text-pink-400">Instagram</span></td><td class="py-3 font-medium">@ai.content.pro</td><td class="py-3 text-right">15.8K</td><td class="py-3 text-right">320K</td><td class="py-3 text-right">35</td><td class="py-3 text-right text-neon-green">342K ₸</td><td class="py-3 text-right text-neon-green">↑ 22%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-purple-500/20 text-purple-400">TikTok</span></td><td class="py-3 font-medium">@vibecoder</td><td class="py-3 text-right">8.7K</td><td class="py-3 text-right">1.2M</td><td class="py-3 text-right">20</td><td class="py-3 text-right text-neon-green">81K ₸</td><td class="py-3 text-right text-neon-green">↑ 45%</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3"><span class="platform-tag bg-gray-500/20 text-gray-400">ProductHunt</span></td><td class="py-3 font-medium">AI Tools by T</td><td class="py-3 text-right">2.1K</td><td class="py-3 text-right">18K</td><td class="py-3 text-right">2</td><td class="py-3 text-right text-neon-green">171K ₸</td><td class="py-3 text-right text-neon-green">↑ 56%</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
 </div>
 
 <!-- ===== TAB: CALENDAR / ПЛАНИРОВАНИЕ ===== -->
@@ -444,19 +196,9 @@ tailwind.config = {
 <section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center gap-4">
-      <button onclick="calNav(-1)" class="glass rounded-lg px-3 py-1.5 text-sm">←</button>
-      <h2 class="text-lg font-bold" id="calTitle">Март 2026</h2>
-      <button onclick="calNav(1)" class="glass rounded-lg px-3 py-1.5 text-sm">→</button>
+      <h2 class="text-lg font-bold">Март 2026</h2>
     </div>
-    <div class="flex gap-2">
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-blue"></span>VibeCoder</span>
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-purple"></span>AI Sites</span>
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-green"></span>AI Apps</span>
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-cyan"></span>AI Bots</span>
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-pink"></span>AI Design</span>
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-orange"></span>AI Content</span>
-      <span class="flex items-center gap-1.5 text-xs text-white/40"><span class="w-2 h-2 rounded-full bg-neon-red"></span>AI SaaS</span>
-    </div>
+    <p class="text-sm text-white/40">Планируй контент — каждый день один шаг</p>
   </div>
 
   <!-- Day headers -->
@@ -477,120 +219,123 @@ tailwind.config = {
 <!-- ===== TAB: FUNNELS / ВОРОНКИ ===== -->
 <div id="page-funnels" class="page">
 <section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
-  <h2 class="text-lg font-bold mb-6">Воронки продаж</h2>
+  <h2 class="text-lg font-bold mb-2">Планируемые воронки</h2>
+  <p class="text-sm text-white/40 mb-6">Структура воронок, которые ты построишь. Сейчас все на нуле — данные появятся с первым трафиком.</p>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
     <!-- VibeCoder Funnel -->
     <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-blue mb-4">⚡ VibeCoder — Воронка курсов</h3>
+      <h3 class="font-bold text-neon-blue mb-1">⚡ VibeCoder — Воронка курсов</h3>
+      <p class="text-xs text-white/30 mb-4">Обучение вайбкодингу через контент</p>
       <div class="space-y-3">
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Увидели рекламу / контент</span><span class="font-bold">24,500</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/60" style="width:100%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Контент (посты, видео)</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/20" style="width:100%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Перешли на канал</span><span class="font-bold">8,200 <span class="text-white/30 text-xs">33.5%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/50" style="width:33.5%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Просмотры</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/15" style="width:60%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Подписались</span><span class="font-bold">3,100 <span class="text-white/30 text-xs">37.8%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/40" style="width:12.7%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Подписки</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/10" style="width:30%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Открыли бесплатный гайд</span><span class="font-bold">1,450 <span class="text-white/30 text-xs">46.8%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/30" style="width:5.9%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Лиды (запросы)</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/8" style="width:10%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Купили курс</span><span class="font-bold text-neon-green">87 <span class="text-white/30 text-xs">6.0%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green" style="width:0.35%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Продажи</span><span class="font-bold text-white/30">0 ₸</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
         </div>
       </div>
-      <div class="mt-4 pt-4 border-t border-white/5 flex justify-between text-sm">
-        <span class="text-white/40">Средний чек</span>
-        <span class="font-bold text-neon-green">4,380 ₸</span>
+      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
+        Цель: запустить воронку в апреле 2026
       </div>
     </div>
 
     <!-- AI Sites Funnel -->
     <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-purple mb-4">🌐 AI Sites — Воронка заказов</h3>
+      <h3 class="font-bold text-neon-purple mb-1">🌐 AI Sites — Воронка заказов</h3>
+      <p class="text-xs text-white/30 mb-4">Сайты для бизнеса с помощью ИИ</p>
       <div class="space-y-3">
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Увидели портфолио</span><span class="font-bold">12,800</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/60" style="width:100%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Портфолио / кейсы</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/20" style="width:100%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Написали в DM</span><span class="font-bold">340 <span class="text-white/30 text-xs">2.7%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/50" style="width:2.7%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Просмотры</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/15" style="width:50%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Получили КП</span><span class="font-bold">120 <span class="text-white/30 text-xs">35.3%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/40" style="width:0.94%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Написали в DM</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/10" style="width:15%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Оплатили</span><span class="font-bold text-neon-green">23 <span class="text-white/30 text-xs">19.2%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green" style="width:0.18%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Оплатили</span><span class="font-bold text-white/30">0 ₸</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
         </div>
       </div>
-      <div class="mt-4 pt-4 border-t border-white/5 flex justify-between text-sm">
-        <span class="text-white/40">Средний чек</span>
-        <span class="font-bold text-neon-green">23,500 ₸</span>
+      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
+        Цель: первый заказ в апреле 2026
       </div>
     </div>
 
     <!-- AI Bots Funnel -->
     <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-cyan mb-4">🤖 AI Bots — Воронка автоворонок</h3>
+      <h3 class="font-bold text-neon-cyan mb-1">🤖 AI Bots — Воронка ботов</h3>
+      <p class="text-xs text-white/30 mb-4">Боты и автоматизация для бизнеса</p>
       <div class="space-y-3">
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Трафик на бот</span><span class="font-bold">9,400</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/60" style="width:100%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Демо-боты / контент</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/20" style="width:100%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Запустили бот</span><span class="font-bold">4,700 <span class="text-white/30 text-xs">50%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/50" style="width:50%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Попробовали бот</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/15" style="width:50%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Дошли до оффера</span><span class="font-bold">1,880 <span class="text-white/30 text-xs">40%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/40" style="width:20%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Запросили бот</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/10" style="width:15%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Заказали бот</span><span class="font-bold text-neon-green">34 <span class="text-white/30 text-xs">1.8%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green" style="width:0.36%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Заказали</span><span class="font-bold text-white/30">0 ₸</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
         </div>
       </div>
-      <div class="mt-4 pt-4 border-t border-white/5 flex justify-between text-sm">
-        <span class="text-white/40">Средний чек</span>
-        <span class="font-bold text-neon-green">12,200 ₸</span>
+      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
+        Цель: первый заказ на бот в мае 2026
       </div>
     </div>
 
     <!-- AI SaaS Funnel -->
     <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-red mb-4">🚀 AI SaaS — Воронка подписок</h3>
+      <h3 class="font-bold text-neon-red mb-1">🚀 AI SaaS — Воронка подписок</h3>
+      <p class="text-xs text-white/30 mb-4">Свои микро-продукты по подписке</p>
       <div class="space-y-3">
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Посетили лендинг</span><span class="font-bold">18,200</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/60" style="width:100%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Лендинг / демо</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/20" style="width:100%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Начали trial</span><span class="font-bold">2,100 <span class="text-white/30 text-xs">11.5%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/50" style="width:11.5%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Регистрации</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/15" style="width:40%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Активные 7+ дней</span><span class="font-bold">840 <span class="text-white/30 text-xs">40%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/40" style="width:4.6%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Активные пользователи</span><span class="font-bold text-white/30">0</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/10" style="width:15%"></div></div>
         </div>
         <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span>Оплатили подписку</span><span class="font-bold text-neon-green">380 <span class="text-white/30 text-xs">45.2%</span></span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green" style="width:2.1%"></div></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Оплатили подписку</span><span class="font-bold text-white/30">0 ₸</span></div>
+          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
         </div>
       </div>
-      <div class="mt-4 pt-4 border-t border-white/5 flex justify-between text-sm">
-        <span class="text-white/40">ARPU</span>
-        <span class="font-bold text-neon-green">450 ₸/мес</span>
+      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
+        Цель: MVP продукта к июню 2026
       </div>
     </div>
+
   </div>
 </section>
 </div>
@@ -599,35 +344,35 @@ tailwind.config = {
 <div id="page-warroom" class="page">
 <section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
   <h2 class="text-lg font-bold mb-2">War Room</h2>
-  <p class="text-sm text-white/40 mb-6">Стратегический центр управления. Думай как генерал — действуй как предприниматель.</p>
+  <p class="text-sm text-white/40 mb-6">Стратегический центр. Ты начинаешь с нуля — но у тебя есть план.</p>
 
   <!-- OKRs -->
   <div class="glass rounded-2xl p-6 mb-6">
-    <h3 class="font-bold mb-4">🎯 OKR — Q1 2026 (Янв-Мар)</h3>
+    <h3 class="font-bold mb-4">OKR — Q2 2026 (Апр-Июн)</h3>
     <div class="space-y-4">
       <div>
         <div class="flex justify-between text-sm mb-1">
-          <span class="font-medium">O1: Выйти на 3M ₸/мес стабильно</span>
-          <span class="text-neon-green font-bold">98%</span>
+          <span class="font-medium">O1: Запустить первый аккаунт и выпустить 30 единиц контента</span>
+          <span class="text-white/30 font-bold">0%</span>
         </div>
-        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-neon-green" style="width:98%"></div></div>
-        <div class="text-xs text-white/30 mt-1">KR1: 7 ниш запущено ✓ | KR2: 2.95M достигнуто ✓ | KR3: 60K подписчиков ✓</div>
+        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-white/10" style="width:0%"></div></div>
+        <div class="text-xs text-white/30 mt-1">KR1: Выбрать нишу для старта | KR2: Создать аккаунт | KR3: 30 постов/видео</div>
       </div>
       <div>
         <div class="flex justify-between text-sm mb-1">
-          <span class="font-medium">O2: Построить контент-машину (200+ ед/мес)</span>
-          <span class="text-neon-blue font-bold">107%</span>
+          <span class="font-medium">O2: Набрать первые 1,000 подписчиков</span>
+          <span class="text-white/30 font-bold">0%</span>
         </div>
-        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-neon-blue" style="width:100%"></div></div>
-        <div class="text-xs text-white/30 mt-1">KR1: 214 единиц контента ✓ | KR2: все платформы активны ✓</div>
+        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-white/10" style="width:0%"></div></div>
+        <div class="text-xs text-white/30 mt-1">KR1: 100 подписчиков за первый месяц | KR2: 500 за второй | KR3: 1000 к концу Q2</div>
       </div>
       <div>
         <div class="flex justify-between text-sm mb-1">
-          <span class="font-medium">O3: Запустить 3 SaaS-продукта</span>
-          <span class="text-neon-purple font-bold">100%</span>
+          <span class="font-medium">O3: Получить первый доход</span>
+          <span class="text-white/30 font-bold">0%</span>
         </div>
-        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-neon-purple" style="width:100%"></div></div>
-        <div class="text-xs text-white/30 mt-1">KR1: AI Writer ✓ | KR2: Content Planner ✓ | KR3: Bot Builder ✓</div>
+        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-white/10" style="width:0%"></div></div>
+        <div class="text-xs text-white/30 mt-1">KR1: Первый клиент | KR2: Первая оплата | KR3: Повторный заказ</div>
       </div>
     </div>
   </div>
@@ -635,42 +380,42 @@ tailwind.config = {
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- SWOT -->
     <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold mb-4">📊 SWOT-анализ</h3>
+      <h3 class="font-bold mb-4">SWOT-анализ</h3>
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-neon-green/5 border border-neon-green/20 rounded-xl p-3">
           <p class="text-xs font-bold text-neon-green mb-2">СИЛЬНЫЕ СТОРОНЫ</p>
           <ul class="text-xs text-white/60 space-y-1">
-            <li>• ИИ делает 90% работы</li>
-            <li>• Низкие расходы (180K ₸/мес)</li>
-            <li>• 7 источников дохода</li>
-            <li>• Скорость запуска новых продуктов</li>
+            <li>ИИ-симбиоз с Claude</li>
+            <li>7 ниш запланировано</li>
+            <li>Молодость и скорость (21 год)</li>
+            <li>Нулевые расходы на старте</li>
           </ul>
         </div>
         <div class="bg-neon-red/5 border border-neon-red/20 rounded-xl p-3">
           <p class="text-xs font-bold text-neon-red mb-2">СЛАБЫЕ СТОРОНЫ</p>
           <ul class="text-xs text-white/60 space-y-1">
-            <li>• Один человек = bottleneck</li>
-            <li>• Нет команды</li>
-            <li>• Зависимость от ИИ-инструментов</li>
-            <li>• Малый личный бренд пока</li>
+            <li>Нет аудитории</li>
+            <li>Нет опыта продаж</li>
+            <li>Нет бюджета на рекламу</li>
+            <li>Нет портфолио</li>
           </ul>
         </div>
         <div class="bg-neon-blue/5 border border-neon-blue/20 rounded-xl p-3">
           <p class="text-xs font-bold text-neon-blue mb-2">ВОЗМОЖНОСТИ</p>
           <ul class="text-xs text-white/60 space-y-1">
-            <li>• ИИ-рынок растёт 40%/год</li>
-            <li>• Мало конкурентов в KZ</li>
-            <li>• Масштабирование через SaaS</li>
-            <li>• Партнёрства с бизнесами</li>
+            <li>ИИ-рынок растёт 40%/год</li>
+            <li>Мало конкурентов в KZ</li>
+            <li>Все инструменты бесплатны</li>
+            <li>Органический рост через контент</li>
           </ul>
         </div>
         <div class="bg-neon-orange/5 border border-neon-orange/20 rounded-xl p-3">
           <p class="text-xs font-bold text-neon-orange mb-2">УГРОЗЫ</p>
           <ul class="text-xs text-white/60 space-y-1">
-            <li>• Конкуренты копируют модель</li>
-            <li>• ИИ-инструменты подорожают</li>
-            <li>• Выгорание без команды</li>
-            <li>• Изменения алгоритмов платформ</li>
+            <li>Потеря мотивации</li>
+            <li>Конкуренты быстрее</li>
+            <li>Изменения алгоритмов</li>
+            <li>Выгорание без результатов</li>
           </ul>
         </div>
       </div>
@@ -678,64 +423,33 @@ tailwind.config = {
 
     <!-- Next Moves -->
     <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold mb-4">♟️ Следующие ходы (48 Laws Energy)</h3>
+      <h3 class="font-bold mb-4">Первые 3 хода</h3>
       <div class="space-y-3">
         <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">🔥</span>
+          <span class="text-lg">1.</span>
           <div>
-            <p class="text-sm font-medium">Нанять первого ассистента</p>
-            <p class="text-xs text-white/40">Делегировать контент-план + публикации. Освободить 3ч/день</p>
-            <p class="text-xs text-neon-orange mt-1">Приоритет: КРИТИЧЕСКИЙ</p>
+            <p class="text-sm font-medium">Создать первый контент</p>
+            <p class="text-xs text-white/40">Выбрать одну нишу, записать 3 поста/видео. Не идеально — просто начать.</p>
+            <p class="text-xs text-neon-red mt-1">Приоритет: СЕЙЧАС</p>
           </div>
         </div>
         <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">🚀</span>
+          <span class="text-lg">2.</span>
           <div>
-            <p class="text-sm font-medium">Запустить AI Marketplace</p>
-            <p class="text-xs text-white/40">Объединить все сервисы на одном сайте. Один бренд → одна воронка</p>
-            <p class="text-xs text-neon-blue mt-1">Приоритет: ВЫСОКИЙ</p>
+            <p class="text-sm font-medium">Запустить Telegram-канал</p>
+            <p class="text-xs text-white/40">Создать канал, оформить, выложить первые посты. Пригласить друзей.</p>
+            <p class="text-xs text-neon-orange mt-1">Приоритет: ЭТА НЕДЕЛЯ</p>
           </div>
         </div>
         <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">💰</span>
+          <span class="text-lg">3.</span>
           <div>
-            <p class="text-sm font-medium">Масштабировать SaaS до 1M MRR</p>
-            <p class="text-xs text-white/40">Фокус на retention + реферальная программа. Product-led growth</p>
-            <p class="text-xs text-neon-purple mt-1">Приоритет: ВЫСОКИЙ</p>
-          </div>
-        </div>
-        <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">🎓</span>
-          <div>
-            <p class="text-sm font-medium">Запуск YouTube на английском</p>
-            <p class="text-xs text-white/40">Мировой рынок x100. AI делает субтитры + voiceover</p>
-            <p class="text-xs text-neon-green mt-1">Приоритет: Q2 2026</p>
+            <p class="text-sm font-medium">Найти первого клиента</p>
+            <p class="text-xs text-white/40">Сделать первый проект бесплатно или за минимум. Получить кейс и отзыв.</p>
+            <p class="text-xs text-neon-blue mt-1">Приоритет: ДО КОНЦА МЕСЯЦА</p>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Competitor Radar -->
-  <div class="glass rounded-2xl p-6 mt-6">
-    <h3 class="font-bold mb-4">🔭 Конкурентный радар</h3>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="text-white/40 text-xs border-b border-white/5">
-            <th class="text-left py-3">Конкурент</th>
-            <th class="text-right py-3">Подписчики</th>
-            <th class="text-right py-3">Продукты</th>
-            <th class="text-right py-3">Оценка дохода</th>
-            <th class="text-right py-3">Наше преимущество</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-white/5">
-          <tr class="hover:bg-white/5"><td class="py-3 font-medium">@ai_курсы_kz</td><td class="py-3 text-right">25K</td><td class="py-3 text-right">2</td><td class="py-3 text-right">~1.5M ₸</td><td class="py-3 text-right text-neon-green text-xs">Больше ниш, SaaS</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3 font-medium">NoCode Studio</td><td class="py-3 text-right">12K</td><td class="py-3 text-right">1</td><td class="py-3 text-right">~800K ₸</td><td class="py-3 text-right text-neon-green text-xs">Скорость, цена</td></tr>
-          <tr class="hover:bg-white/5"><td class="py-3 font-medium">Web Agency X</td><td class="py-3 text-right">8K</td><td class="py-3 text-right">3</td><td class="py-3 text-right">~2M ₸</td><td class="py-3 text-right text-neon-green text-xs">ИИ-автоматизация</td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </section>
@@ -745,50 +459,53 @@ tailwind.config = {
 <div id="page-projections" class="page">
 <section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
   <h2 class="text-lg font-bold mb-2">Проекции роста</h2>
-  <p class="text-sm text-white/40 mb-6">Когда ты достигнешь 45M ₸/мес? Математика говорит...</p>
+  <p class="text-sm text-white/40 mb-6">Когда первый 1M ₸/мес? Три сценария от нуля.</p>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
     <div class="glass rounded-2xl p-6 glow-green">
-      <p class="text-xs text-white/40 mb-1">Текущий рост</p>
-      <p class="text-3xl font-black text-neon-green">+23.4%</p>
-      <p class="text-xs text-white/30">в месяц</p>
+      <p class="text-xs text-white/40 mb-1">Текущий доход</p>
+      <p class="text-3xl font-black gradient-text" id="projCurrent">0 ₸</p>
+      <p class="text-xs text-white/30">старт с нуля</p>
     </div>
     <div class="glass rounded-2xl p-6 glow-purple">
-      <p class="text-xs text-white/40 mb-1">До цели 45M ₸</p>
-      <p class="text-3xl font-black text-neon-purple">~13 мес</p>
-      <p class="text-xs text-white/30">при текущем темпе</p>
+      <p class="text-xs text-white/40 mb-1">Цель</p>
+      <p class="text-3xl font-black text-neon-purple">1M ₸/мес</p>
+      <p class="text-xs text-white/30">первый milestone</p>
     </div>
     <div class="glass rounded-2xl p-6 glow-blue">
-      <p class="text-xs text-white/40 mb-1">Прогноз Апрель</p>
-      <p class="text-3xl font-black text-neon-blue">3.64M ₸</p>
-      <p class="text-xs text-white/30">+23.4% от марта</p>
+      <p class="text-xs text-white/40 mb-1">Ключевая метрика</p>
+      <p class="text-3xl font-black text-neon-blue">Первая продажа</p>
+      <p class="text-xs text-white/30">всё начинается с неё</p>
     </div>
   </div>
 
   <div class="glass rounded-2xl p-6">
-    <h3 class="font-bold mb-4">📈 Прогноз на 12 месяцев</h3>
+    <h3 class="font-bold mb-4">Прогноз на 12 месяцев (после первой продажи)</h3>
     <canvas id="projectionChart" height="250"></canvas>
   </div>
 
   <!-- Scenario Planning -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
     <div class="glass rounded-2xl p-5 border-l-4 border-neon-red">
-      <h4 class="text-sm font-bold text-neon-red mb-2">🐌 Пессимистичный (+10%/мес)</h4>
-      <p class="text-2xl font-bold">9.4M ₸</p>
+      <h4 class="text-sm font-bold text-neon-red mb-2">Медленный старт</h4>
+      <p class="text-xs text-white/60 mb-2">Первая продажа через 3 месяца, рост +15%/мес</p>
+      <p class="text-2xl font-bold">~200K ₸</p>
       <p class="text-xs text-white/40">через 12 месяцев</p>
-      <p class="text-xs text-white/30 mt-2">Если замедлиться, потерять фокус</p>
+      <p class="text-xs text-white/30 mt-2">Если мало контента, нет фокуса</p>
     </div>
     <div class="glass rounded-2xl p-5 border-l-4 border-neon-blue">
-      <h4 class="text-sm font-bold text-neon-blue mb-2">📊 Реалистичный (+23%/мес)</h4>
-      <p class="text-2xl font-bold">32.8M ₸</p>
+      <h4 class="text-sm font-bold text-neon-blue mb-2">Реалистичный</h4>
+      <p class="text-xs text-white/60 mb-2">Первая продажа через 1 месяц, рост +30%/мес</p>
+      <p class="text-2xl font-bold">~500K ₸</p>
       <p class="text-xs text-white/40">через 12 месяцев</p>
-      <p class="text-xs text-white/30 mt-2">Текущий темп сохраняется</p>
+      <p class="text-xs text-white/30 mt-2">Стабильный контент + активные продажи</p>
     </div>
     <div class="glass rounded-2xl p-5 border-l-4 border-neon-green">
-      <h4 class="text-sm font-bold text-neon-green mb-2">🚀 Оптимистичный (+35%/мес)</h4>
-      <p class="text-2xl font-bold">72.5M ₸</p>
+      <h4 class="text-sm font-bold text-neon-green mb-2">Агрессивный</h4>
+      <p class="text-xs text-white/60 mb-2">Первая продажа через 2 недели, рост +50%/мес</p>
+      <p class="text-2xl font-bold">~1.5M ₸</p>
       <p class="text-xs text-white/40">через 12 месяцев</p>
-      <p class="text-xs text-white/30 mt-2">Найм команды + вирусный контент</p>
+      <p class="text-xs text-white/30 mt-2">Максимум контента + вирусный рост + несколько ниш</p>
     </div>
   </div>
 </section>
@@ -799,138 +516,353 @@ tailwind.config = {
   <div class="glass rounded-2xl p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-xl font-bold">Доход по месяцам</h2>
-      <button onclick="document.getElementById('monthlyModal').classList.add('hidden')" class="text-white/40 hover:text-white text-xl">✕</button>
+      <button onclick="document.getElementById('monthlyModal').classList.add('hidden')" class="text-white/40 hover:text-white text-xl">&#10005;</button>
     </div>
-    <div class="space-y-3">
-      <div class="flex items-center justify-between p-4 bg-neon-green/5 border border-neon-green/20 rounded-xl">
-        <div><p class="font-bold">Март 2026</p><p class="text-xs text-white/40">Текущий месяц</p></div>
-        <div class="text-right"><p class="text-xl font-bold text-neon-green">2,946K ₸</p><p class="text-xs text-neon-green">↑ 23.4%</p></div>
-      </div>
-      <div class="flex items-center justify-between p-4 glass rounded-xl">
-        <div><p class="font-bold">Февраль 2026</p></div>
-        <div class="text-right"><p class="text-xl font-bold">2,388K ₸</p><p class="text-xs text-neon-green">↑ 19.8%</p></div>
-      </div>
-      <div class="flex items-center justify-between p-4 glass rounded-xl">
-        <div><p class="font-bold">Январь 2026</p></div>
-        <div class="text-right"><p class="text-xl font-bold">1,993K ₸</p><p class="text-xs text-neon-green">↑ 17.2%</p></div>
-      </div>
-      <div class="flex items-center justify-between p-4 glass rounded-xl">
-        <div><p class="font-bold">Декабрь 2025</p></div>
-        <div class="text-right"><p class="text-xl font-bold">1,701K ₸</p><p class="text-xs text-neon-green">↑ 15.5%</p></div>
-      </div>
-      <div class="flex items-center justify-between p-4 glass rounded-xl">
-        <div><p class="font-bold">Ноябрь 2025</p></div>
-        <div class="text-right"><p class="text-xl font-bold">1,473K ₸</p><p class="text-xs text-neon-green">↑ 12.1%</p></div>
-      </div>
-      <div class="flex items-center justify-between p-4 glass rounded-xl">
-        <div><p class="font-bold">Октябрь 2025</p><p class="text-xs text-white/40">Старт империи</p></div>
-        <div class="text-right"><p class="text-xl font-bold">1,314K ₸</p><p class="text-xs text-white/30">—</p></div>
-      </div>
+    <div class="space-y-3" id="monthlyList">
+      <!-- Generated dynamically -->
     </div>
   </div>
 </div>
 
 <script>
-// Tab switching
-function switchTab(tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + tab).classList.add('active');
-  document.querySelectorAll('[data-tab]').forEach(b => {
-    b.classList.remove('tab-active');
-    b.classList.add('text-white/40');
-  });
-  const btn = document.querySelector(`[data-tab="${tab}"]`);
-  btn.classList.add('tab-active');
-  btn.classList.remove('text-white/40');
-  if (tab === 'projections') renderProjectionChart();
+const API = './api/data.json';
+let DATA = null;
+let revenueChartInstance = null;
+let nicheChartInstance = null;
+let projectionChartInstance = null;
+const sparkCharts = [];
+
+// Format numbers: K / M
+function fmt(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1).replace(/\.?0+$/, '') + 'K';
+  return String(n);
 }
 
-// Monthly modal
-function openMonthlyModal() { document.getElementById('monthlyModal').classList.remove('hidden'); }
-function closeMonthlyModal(e) { if (e.target === e.currentTarget) document.getElementById('monthlyModal').classList.add('hidden'); }
+// Color name to glow class mapping
+const glowMap = {
+  '#00d4ff': 'glow-blue',
+  '#a855f7': 'glow-purple',
+  '#10b981': 'glow-green',
+  '#06b6d4': 'glow-cyan',
+  '#f59e0b': 'glow-orange',
+  '#ec4899': 'glow-pink',
+  '#ef4444': 'glow-red'
+};
 
-// Sparkline charts (line)
-document.querySelectorAll('.spark').forEach(canvas => {
-  const color = canvas.dataset.color;
-  const values = canvas.dataset.values.split(',').map(Number);
-  new Chart(canvas, {
+// Niche descriptions
+const nicheDesc = {
+  'vibecoder': 'Обучение вайбкодингу',
+  'ai-sites': 'Сайты под ключ',
+  'ai-apps': 'Мобильные приложения',
+  'ai-bots': 'Боты и автоматизация',
+  'ai-content': 'Контент для бизнеса',
+  'ai-design': 'Дизайн через ИИ',
+  'ai-saas': 'Свои микро-продукты'
+};
+
+// ===== FETCH & RENDER =====
+async function load() {
+  try {
+    const r = await fetch(API + '?t=' + Date.now());
+    const d = await r.json();
+    DATA = d;
+    render(d);
+  } catch (e) {
+    document.getElementById('revLabel').textContent = 'Нет связи с данными';
+  }
+}
+
+function render(d) {
+  // Header month
+  document.getElementById('headerMonth').textContent = d.month;
+
+  // Main revenue card
+  document.getElementById('revLabel').textContent = 'Общий доход за ' + d.month.toLowerCase();
+  document.getElementById('revAmount').textContent = d.total.amount > 0 ? fmt(d.total.amount) : '0';
+  const changeEl = document.getElementById('revChange');
+  if (d.total.change > 0) {
+    changeEl.textContent = '\u2191 ' + d.total.change + '% vs прошлый месяц';
+    changeEl.className = 'text-sm mt-1 text-neon-green';
+  } else if (d.total.amount === 0) {
+    changeEl.textContent = 'Старт с нуля — первый доход впереди';
+    changeEl.className = 'text-sm mt-1 text-white/30';
+  } else {
+    changeEl.textContent = d.total.change + '%';
+    changeEl.className = 'text-sm mt-1 text-neon-red';
+  }
+
+  // Stats in revenue bar
+  document.getElementById('statNiches').textContent = d.niches.length;
+  document.getElementById('statSubs').textContent = d.subscribers.total > 0 ? fmt(d.subscribers.total) : '0';
+  document.getElementById('statContent').textContent = d.content.done + ' / ' + d.content.total;
+
+  // Goal progress
+  const goalPct = d.goal.target > 0 ? (d.goal.current / d.goal.target * 100) : 0;
+  document.getElementById('goalProgress').textContent = fmt(d.goal.current) + ' / ' + fmt(d.goal.target) + ' ₸';
+  document.getElementById('goalBar').style.width = goalPct.toFixed(2) + '%';
+
+  // Speed metrics
+  document.getElementById('speedToday').textContent = d.today.amount > 0 ? fmt(d.today.amount) + ' ₸' : '0 ₸';
+  const todayChangeEl = document.getElementById('speedTodayChange');
+  if (d.today.change > 0) {
+    todayChangeEl.textContent = '\u2191 ' + d.today.change + '% vs вчера';
+    todayChangeEl.className = 'text-[10px] text-neon-green';
+  } else {
+    todayChangeEl.textContent = 'нет данных';
+    todayChangeEl.className = 'text-[10px] text-white/30';
+  }
+
+  document.getElementById('speedContent').textContent = d.content.done + ' / ' + d.content.total;
+  const contentPct = d.content.total > 0 ? Math.round(d.content.done / d.content.total * 100) : 0;
+  document.getElementById('speedContentPct').textContent = contentPct + '% плана';
+
+  document.getElementById('speedSubs').textContent = d.subscribers.new > 0 ? '+' + d.subscribers.new : '0';
+  document.getElementById('speedUsd').textContent = d.total.usd > 0 ? '$' + d.total.usd.toLocaleString() : '$0';
+
+  // Niche cards
+  renderNicheCards(d.niches);
+
+  // Charts
+  renderRevenueChart(d.months, d.niches);
+  renderNicheDonut(d.niches);
+
+  // Monthly modal
+  renderMonthlyModal(d.months);
+
+  // Projection current
+  document.getElementById('projCurrent').textContent = d.total.amount > 0 ? fmt(d.total.amount) + ' ₸' : '0 ₸';
+}
+
+// ===== NICHE CARDS =====
+function renderNicheCards(niches) {
+  const container = document.getElementById('nicheCards');
+
+  // Destroy old sparkline charts
+  sparkCharts.forEach(c => c.destroy());
+  sparkCharts.length = 0;
+
+  container.innerHTML = niches.map((n, i) => {
+    const glow = glowMap[n.color] || 'glow-blue';
+    const desc = nicheDesc[n.id] || '';
+    const colorHex = n.color;
+    return `
+    <div class="glass rounded-2xl p-5 niche-card ${glow}">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:${colorHex}20">${n.icon}</div>
+          <div>
+            <h3 class="font-bold text-sm">${n.name}</h3>
+            <p class="text-xs text-white/40">${desc}</p>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold" style="color:${colorHex}">${n.amount > 0 ? fmt(n.amount) + ' ₸' : '0 ₸'}</span></div>
+        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">${n.subs > 0 ? fmt(n.subs) : '0'}</span></div>
+      </div>
+      <div class="mt-3 h-8"><canvas class="spark-dynamic" data-color="${colorHex}" data-idx="${i}"></canvas></div>
+    </div>`;
+  }).join('');
+
+  // Render sparkline charts
+  document.querySelectorAll('.spark-dynamic').forEach(canvas => {
+    const color = canvas.dataset.color;
+    // For now show a flat line (zeros), will update when months have data
+    const values = [0, 0, 0, 0, 0, 0];
+    const chart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: values.map(() => ''),
+        datasets: [{
+          data: values,
+          borderColor: color,
+          borderWidth: 2,
+          fill: true,
+          backgroundColor: color + '15',
+          tension: 0.4,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { display: false }, y: { display: false, min: 0 } }
+      }
+    });
+    sparkCharts.push(chart);
+  });
+}
+
+// ===== REVENUE CHART =====
+function renderRevenueChart(months, niches) {
+  if (revenueChartInstance) revenueChartInstance.destroy();
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  const labels = months.map(m => m.month);
+  const totalData = months.map(m => m.amount);
+
+  revenueChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: values.map(() => ''),
+      labels: labels,
       datasets: [{
-        data: values,
-        borderColor: color,
-        borderWidth: 2,
+        label: 'Общий доход',
+        data: totalData,
+        borderColor: '#00d4ff',
+        backgroundColor: '#00d4ff10',
         fill: true,
-        backgroundColor: color + '15',
         tension: 0.4,
-        pointRadius: 0
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#00d4ff'
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { x: { display: false }, y: { display: false } }
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.03)' },
+          ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 }, callback: v => v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v },
+          min: 0
+        }
+      }
     }
   });
-});
+}
 
-// Revenue Chart (LINE)
-const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-new Chart(revenueCtx, {
-  type: 'line',
-  data: {
-    labels: ['Окт', 'Ноя', 'Дек', 'Янв', 'Фев', 'Мар'],
-    datasets: [
-      { label: 'VibeCoder', data: [144,185,234,275,324,381], borderColor: '#00d4ff', backgroundColor: '#00d4ff10', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#00d4ff' },
-      { label: 'AI Sites', data: [203,261,315,383,441,540], borderColor: '#a855f7', backgroundColor: '#a855f710', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#a855f7' },
-      { label: 'AI Apps', data: [90,180,293,405,585,810], borderColor: '#10b981', backgroundColor: '#10b98110', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981' },
-      { label: 'AI Bots', data: [171,189,225,279,338,414], borderColor: '#06b6d4', backgroundColor: '#06b6d410', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#06b6d4' },
-      { label: 'AI Design', data: [158,171,189,216,243,288], borderColor: '#ec4899', backgroundColor: '#ec489910', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#ec4899' },
-      { label: 'AI Content', data: [126,153,189,230,279,342], borderColor: '#f59e0b', backgroundColor: '#f59e0b10', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#f59e0b' },
-      { label: 'AI SaaS', data: [23,36,54,81,117,171], borderColor: '#ef4444', backgroundColor: '#ef444410', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#ef4444' },
-    ]
-  },
-  options: {
-    responsive: true,
-    interaction: { mode: 'index', intersect: false },
-    plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } } },
-    scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } },
-      y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K' } }
-    }
+// ===== NICHE DONUT =====
+function renderNicheDonut(niches) {
+  if (nicheChartInstance) nicheChartInstance.destroy();
+  const ctx = document.getElementById('nicheChart');
+  const totalAmount = niches.reduce((s, n) => s + n.amount, 0);
+
+  // If all zeros, show equal slices
+  const data = totalAmount > 0 ? niches.map(n => n.amount) : niches.map(() => 1);
+  const colors = niches.map(n => n.color);
+
+  nicheChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: niches.map(n => n.name),
+      datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, spacing: 2 }]
+    },
+    options: { responsive: true, cutout: '70%', plugins: { legend: { display: false } } }
+  });
+
+  // Legend
+  const legend = document.getElementById('nicheLegend');
+  legend.innerHTML = niches.map(n => {
+    const pct = totalAmount > 0 ? (n.amount / totalAmount * 100).toFixed(1) : (100 / niches.length).toFixed(1);
+    return `
+    <div class="flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full" style="background:${n.color}"></div><span class="text-white/60">${n.name}</span></div>
+      <span class="font-medium">${totalAmount > 0 ? pct + '%' : '—'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ===== MONTHLY MODAL =====
+function renderMonthlyModal(months) {
+  const container = document.getElementById('monthlyList');
+  if (!months || months.length === 0) {
+    container.innerHTML = '<p class="text-sm text-white/40">Пока нет данных за прошлые месяцы</p>';
+    return;
   }
-});
+  container.innerHTML = months.map((m, i) => {
+    const isCurrent = i === months.length - 1;
+    const prevAmt = i > 0 ? months[i - 1].amount : 0;
+    const change = prevAmt > 0 ? ((m.amount - prevAmt) / prevAmt * 100).toFixed(1) : 0;
 
-// Niche Donut
-new Chart(document.getElementById('nicheChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['AI Apps', 'AI Sites', 'AI Bots', 'VibeCoder', 'AI Content', 'AI Design', 'AI SaaS'],
-    datasets: [{ data: [810,540,414,381,342,288,171], backgroundColor: ['#10b981','#a855f7','#06b6d4','#00d4ff','#f59e0b','#ec4899','#ef4444'], borderWidth: 0, spacing: 2 }]
-  },
-  options: { responsive: true, cutout: '70%', plugins: { legend: { display: false } } }
-});
+    if (isCurrent) {
+      return `
+      <div class="flex items-center justify-between p-4 ${m.amount > 0 ? 'bg-neon-green/5 border border-neon-green/20' : 'bg-white/5 border border-white/10'} rounded-xl">
+        <div><p class="font-bold">${m.month}</p><p class="text-xs text-white/40">Текущий месяц</p></div>
+        <div class="text-right">
+          <p class="text-xl font-bold ${m.amount > 0 ? 'text-neon-green' : 'text-white/30'}">${m.amount > 0 ? fmt(m.amount) + ' ₸' : '0 ₸'}</p>
+          ${change > 0 ? '<p class="text-xs text-neon-green">\u2191 ' + change + '%</p>' : ''}
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="flex items-center justify-between p-4 glass rounded-xl">
+      <div><p class="font-bold">${m.month}</p></div>
+      <div class="text-right">
+        <p class="text-xl font-bold">${m.amount > 0 ? fmt(m.amount) + ' ₸' : '0 ₸'}</p>
+        ${change > 0 ? '<p class="text-xs text-neon-green">\u2191 ' + change + '%</p>' : ''}
+      </div>
+    </div>`;
+  }).reverse().join('');
+}
 
-// Projection Chart (lazy)
+// ===== CALENDAR =====
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  // March 2026 starts on Sunday, offset = 6 (Mon-based grid)
+  const startDay = 6;
+  const today = 23;
+  const daysInMonth = 31;
+
+  // Only 2 placeholder events for someone just starting
+  const calEvents = {
+    24: [{ t: 'Создать первый пост', c: '#00d4ff' }],
+    25: [{ t: 'Запустить канал', c: '#a855f7' }]
+  };
+
+  for (let i = 0; i < startDay; i++) {
+    grid.innerHTML += '<div class="cal-cell opacity-30"></div>';
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = d === today;
+    const events = calEvents[d] || [];
+    let evHtml = events.map(e =>
+      `<div class="cal-event" style="background:${e.c}20;color:${e.c};border-left:2px solid ${e.c}">${e.t}</div>`
+    ).join('');
+    grid.innerHTML += `<div class="cal-cell ${isToday ? 'today' : ''}">
+      <div class="text-xs font-medium ${isToday ? 'text-neon-blue' : 'text-white/50'} mb-1">${d}</div>
+      ${evHtml}
+    </div>`;
+  }
+}
+
+// ===== PROJECTION CHART =====
 function renderProjectionChart() {
+  if (projectionChartInstance) return;
+
   const ctx = document.getElementById('projectionChart');
-  if (ctx._rendered) return;
-  ctx._rendered = true;
-  const months = ['Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек','Янв\'27','Фев','Мар\'27'];
-  const base = 2946;
-  const pessimistic = months.map((_,i) => Math.round(base * Math.pow(1.10, i)));
-  const realistic = months.map((_,i) => Math.round(base * Math.pow(1.234, i)));
-  const optimistic = months.map((_,i) => Math.round(base * Math.pow(1.35, i)));
-  new Chart(ctx, {
+  const months = ['Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек', 'Янв\'27', 'Фев', 'Мар\'27'];
+
+  // Scenarios starting from first sale
+  // Slow: first sale at month 3 (5K), then +15%/month
+  const slow = months.map((_, i) => {
+    if (i < 2) return 0;
+    return Math.round(5000 * Math.pow(1.15, i - 2));
+  });
+
+  // Realistic: first sale at month 1 (10K), then +30%/month
+  const realistic = months.map((_, i) => {
+    if (i < 1) return 0;
+    return Math.round(10000 * Math.pow(1.30, i - 1));
+  });
+
+  // Aggressive: first sale immediately (20K), then +50%/month
+  const aggressive = months.map((_, i) => {
+    return Math.round(20000 * Math.pow(1.50, i));
+  });
+
+  projectionChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
       labels: months,
       datasets: [
-        { label: 'Пессимистичный (+10%)', data: pessimistic, borderColor: '#ef4444', borderDash: [5,5], borderWidth: 2, tension: 0.3, pointRadius: 2, fill: false },
-        { label: 'Реалистичный (+23%)', data: realistic, borderColor: '#00d4ff', borderWidth: 3, tension: 0.3, pointRadius: 3, pointBackgroundColor: '#00d4ff', fill: true, backgroundColor: '#00d4ff10' },
-        { label: 'Оптимистичный (+35%)', data: optimistic, borderColor: '#10b981', borderDash: [5,5], borderWidth: 2, tension: 0.3, pointRadius: 2, fill: false },
-        { label: 'Цель: 45M', data: months.map(() => 45000), borderColor: '#a855f750', borderDash: [10,5], borderWidth: 1, pointRadius: 0, fill: false }
+        { label: 'Медленный (+15%)', data: slow, borderColor: '#ef4444', borderDash: [5, 5], borderWidth: 2, tension: 0.4, pointRadius: 2, fill: false },
+        { label: 'Реалистичный (+30%)', data: realistic, borderColor: '#00d4ff', borderWidth: 3, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#00d4ff', fill: true, backgroundColor: '#00d4ff10' },
+        { label: 'Агрессивный (+50%)', data: aggressive, borderColor: '#10b981', borderDash: [5, 5], borderWidth: 2, tension: 0.4, pointRadius: 2, fill: false },
+        { label: 'Цель: 1M ₸', data: months.map(() => 1000000), borderColor: '#a855f750', borderDash: [10, 5], borderWidth: 1, pointRadius: 0, fill: false }
       ]
     },
     options: {
@@ -939,65 +871,37 @@ function renderProjectionChart() {
       plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } } },
       scales: {
         x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)' } },
-        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)', callback: v => (v/1000).toFixed(0) + 'M' } }
+        y: {
+          grid: { color: 'rgba(255,255,255,0.03)' },
+          ticks: { color: 'rgba(255,255,255,0.4)', callback: v => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v }
+        }
       }
     }
   });
 }
 
-// Calendar
-const calEvents = {
-  1: [{t:'YouTube: VibeCoder #12',c:'#00d4ff'},{t:'TG пост AI Bots',c:'#06b6d4'}],
-  2: [{t:'IG рилс AI Design',c:'#ec4899'}],
-  3: [{t:'TikTok: код за 60 сек',c:'#00d4ff'},{t:'TG кейс AI Sites',c:'#a855f7'}],
-  4: [{t:'YouTube Shorts x3',c:'#00d4ff'}],
-  5: [{t:'Запуск новой фичи SaaS',c:'#ef4444'},{t:'IG Stories x5',c:'#ec4899'}],
-  7: [{t:'TG пост VibeCoder',c:'#00d4ff'}],
-  8: [{t:'Рилс кейс сайта',c:'#a855f7'},{t:'TikTok AI Content',c:'#f59e0b'}],
-  10: [{t:'YouTube: как сделать бота',c:'#06b6d4'}],
-  11: [{t:'Вебинар VibeCoder',c:'#00d4ff'},{t:'IG карусель Design',c:'#ec4899'}],
-  12: [{t:'TG статья AI Apps',c:'#10b981'}],
-  14: [{t:'ProductHunt launch',c:'#ef4444'},{t:'TG анонс',c:'#00d4ff'}],
-  15: [{t:'YouTube: AI Sites кейс',c:'#a855f7'}],
-  17: [{t:'TikTok x5 batch',c:'#f59e0b'},{t:'IG рилс AI Content',c:'#f59e0b'}],
-  18: [{t:'TG пост AI Bots кейс',c:'#06b6d4'}],
-  19: [{t:'YouTube Shorts x3',c:'#00d4ff'}],
-  20: [{t:'IG Stories x5 Design',c:'#ec4899'},{t:'TG VibeCoder гайд',c:'#00d4ff'}],
-  21: [{t:'Запуск бота #35',c:'#06b6d4'}],
-  22: [{t:'YouTube: Claude за 15мин',c:'#00d4ff'},{t:'IG кейс ребрендинг',c:'#ec4899'}],
-  23: [{t:'TikTok: ИИ пишет посты',c:'#f59e0b',now:true},{t:'TG автоворонки',c:'#06b6d4'}],
-  24: [{t:'Рилс AI Apps MVP',c:'#10b981'}],
-  25: [{t:'YouTube: заработок на ботах',c:'#06b6d4'},{t:'IG карусель',c:'#ec4899'}],
-  26: [{t:'TG VibeCoder #13',c:'#00d4ff'}],
-  27: [{t:'SaaS update v2.1',c:'#ef4444'}],
-  28: [{t:'TikTok batch x5',c:'#f59e0b'},{t:'YouTube Shorts',c:'#00d4ff'}],
-  29: [{t:'IG рилс AI Sites',c:'#a855f7'}],
-  30: [{t:'Месячный отчёт',c:'#a855f7'},{t:'TG дайджест',c:'#00d4ff'}],
-  31: [{t:'Планирование Q2',c:'#10b981'}]
-};
-
-function renderCalendar() {
-  const grid = document.getElementById('calGrid');
-  grid.innerHTML = '';
-  // March 2026 starts on Sunday, so offset = 6 (Mon-based)
-  const startDay = 6; // 0=Mon, 6=Sun
-  for (let i = 0; i < startDay; i++) {
-    grid.innerHTML += '<div class="cal-cell opacity-30"></div>';
-  }
-  for (let d = 1; d <= 31; d++) {
-    const isToday = d === 23;
-    const events = calEvents[d] || [];
-    let evHtml = events.map(e =>
-      `<div class="cal-event" style="background:${e.c}20;color:${e.c};border-left:2px solid ${e.c}">${e.now ? '◉ ' : ''}${e.t}</div>`
-    ).join('');
-    grid.innerHTML += `<div class="cal-cell ${isToday ? 'today' : ''}">
-      <div class="text-xs font-medium ${isToday ? 'text-neon-blue' : 'text-white/50'} mb-1">${d}</div>
-      ${evHtml}
-    </div>`;
-  }
+// ===== TAB SWITCHING =====
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  document.querySelectorAll('[data-tab]').forEach(b => {
+    b.classList.remove('tab-active');
+    b.classList.add('text-white/40');
+  });
+  const btn = document.querySelector('[data-tab="' + tab + '"]');
+  btn.classList.add('tab-active');
+  btn.classList.remove('text-white/40');
+  if (tab === 'projections') renderProjectionChart();
 }
+
+// ===== MODAL =====
+function openMonthlyModal() { document.getElementById('monthlyModal').classList.remove('hidden'); }
+function closeMonthlyModal(e) { if (e.target === e.currentTarget) document.getElementById('monthlyModal').classList.add('hidden'); }
+
+// ===== INIT =====
 renderCalendar();
-function calNav(dir) { /* placeholder for month navigation */ }
+load();
+setInterval(load, 5 * 60 * 1000);
 </script>
 
 </body>
