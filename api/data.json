@@ -1,0 +1,46 @@
+{
+  "updated": "2026-03-23T14:00:00",
+  "month": "Март 2026",
+  "currency": "₸",
+  "total": {
+    "amount": 2950000,
+    "display": "2.95M ₸",
+    "usd": 6020,
+    "change": 23.4
+  },
+  "today": {
+    "amount": 98000,
+    "display": "98K ₸",
+    "change": 12
+  },
+  "subscribers": {
+    "new": 347,
+    "total": 61600
+  },
+  "goal": {
+    "target": 45000000,
+    "current": 2950000,
+    "percent": 6.55
+  },
+  "content": {
+    "done": 8,
+    "total": 12
+  },
+  "niches": [
+    { "id": "ai-apps",    "icon": "📱", "name": "AI Apps",    "amount": 810000, "display": "810K", "color": "#10b981", "subs": 4700 },
+    { "id": "ai-sites",   "icon": "🌐", "name": "AI Sites",   "amount": 540000, "display": "540K", "color": "#a855f7", "subs": 8100 },
+    { "id": "ai-bots",    "icon": "🤖", "name": "AI Bots",    "amount": 414000, "display": "414K", "color": "#06b6d4", "subs": 6300 },
+    { "id": "vibecoder",  "icon": "⚡", "name": "VibeCoder",  "amount": 381000, "display": "381K", "color": "#00d4ff", "subs": 12400 },
+    { "id": "ai-content", "icon": "📝", "name": "AI Content", "amount": 342000, "display": "342K", "color": "#f59e0b", "subs": 15800 },
+    { "id": "ai-design",  "icon": "🎨", "name": "AI Design",  "amount": 288000, "display": "288K", "color": "#ec4899", "subs": 11200 },
+    { "id": "ai-saas",    "icon": "🚀", "name": "AI SaaS",    "amount": 171000, "display": "171K", "color": "#ef4444", "subs": 2100 }
+  ],
+  "months": [
+    { "month": "Окт 2025", "amount": 180000 },
+    { "month": "Ноя 2025", "amount": 420000 },
+    { "month": "Дек 2025", "amount": 890000 },
+    { "month": "Янв 2026", "amount": 1450000 },
+    { "month": "Фев 2026", "amount": 2390000 },
+    { "month": "Мар 2026", "amount": 2950000 }
+  ]
+}

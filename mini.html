@@ -69,103 +69,122 @@
   </div>
   <div style="display:flex;align-items:center;gap:4px">
     <span class="live-dot"></span>
-    <span class="live-text">Live</span>
+    <span class="live-text" id="live-time">Live</span>
   </div>
 </div>
 
 <div class="total-card">
-  <div class="total-label">Доход за март</div>
-  <div class="total-amount">2.95M ₸</div>
-  <div class="total-sub">≈ $6,020</div>
-  <div class="total-change">↑ 23.4%</div>
+  <div class="total-label" id="total-label">Загрузка...</div>
+  <div class="total-amount" id="total-amount">—</div>
+  <div class="total-sub" id="total-sub"></div>
+  <div class="total-change" id="total-change"></div>
 </div>
 
 <div class="today-row">
   <div class="today-card">
     <div class="today-label">Сегодня</div>
-    <div class="today-value">98K ₸</div>
-    <div class="today-sub">↑ 12% vs вчера</div>
+    <div class="today-value" id="today-value">—</div>
+    <div class="today-sub" id="today-sub"></div>
   </div>
   <div class="today-card">
     <div class="today-label">Новые подписчики</div>
-    <div class="today-value">+347</div>
-    <div class="today-sub">61.6K всего</div>
+    <div class="today-value" id="subs-new">—</div>
+    <div class="today-sub" id="subs-total"></div>
   </div>
 </div>
 
 <div class="niches">
   <div class="niches-title">Доход по нишам</div>
-  <div class="niche-row">
-    <span class="niche-icon">📱</span>
-    <span class="niche-name">AI Apps</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:100%;background:#10b981"></div></div>
-    <span class="niche-amount" style="color:#10b981">810K</span>
-  </div>
-  <div class="niche-row">
-    <span class="niche-icon">🌐</span>
-    <span class="niche-name">AI Sites</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:67%;background:#a855f7"></div></div>
-    <span class="niche-amount" style="color:#a855f7">540K</span>
-  </div>
-  <div class="niche-row">
-    <span class="niche-icon">🤖</span>
-    <span class="niche-name">AI Bots</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:51%;background:#06b6d4"></div></div>
-    <span class="niche-amount" style="color:#06b6d4">414K</span>
-  </div>
-  <div class="niche-row">
-    <span class="niche-icon">⚡</span>
-    <span class="niche-name">VibeCoder</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:47%;background:#00d4ff"></div></div>
-    <span class="niche-amount" style="color:#00d4ff">381K</span>
-  </div>
-  <div class="niche-row">
-    <span class="niche-icon">📝</span>
-    <span class="niche-name">AI Content</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:42%;background:#f59e0b"></div></div>
-    <span class="niche-amount" style="color:#f59e0b">342K</span>
-  </div>
-  <div class="niche-row">
-    <span class="niche-icon">🎨</span>
-    <span class="niche-name">AI Design</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:36%;background:#ec4899"></div></div>
-    <span class="niche-amount" style="color:#ec4899">288K</span>
-  </div>
-  <div class="niche-row">
-    <span class="niche-icon">🚀</span>
-    <span class="niche-name">AI SaaS</span>
-    <div class="niche-bar-bg"><div class="niche-bar" style="width:21%;background:#ef4444"></div></div>
-    <span class="niche-amount" style="color:#ef4444">171K</span>
-  </div>
+  <div id="niches-list"></div>
 </div>
 
 <div class="goal">
   <div class="goal-header">
-    <span class="goal-title">Цель: 45M ₸/мес</span>
-    <span class="goal-numbers">2.95M / 45M</span>
+    <span class="goal-title" id="goal-title">Цель</span>
+    <span class="goal-numbers" id="goal-numbers"></span>
   </div>
   <div class="goal-bar-bg">
-    <div class="goal-bar" style="width:6.55%"></div>
+    <div class="goal-bar" id="goal-bar" style="width:0%"></div>
   </div>
 </div>
 
 <div class="content-today">
-  <div class="content-title">Контент сегодня: 8 / 12</div>
-  <div class="content-dots">
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-done">✓</div>
-    <div class="content-dot dot-progress">◉</div>
-    <div class="content-dot dot-pending"></div>
-    <div class="content-dot dot-pending"></div>
-    <div class="content-dot dot-pending"></div>
-  </div>
+  <div class="content-title" id="content-title">Контент сегодня</div>
+  <div class="content-dots" id="content-dots"></div>
 </div>
+
+<script>
+const API = './api/data.json';
+
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(n%1000000===0?0:2).replace(/\.?0+$/,'') + 'M';
+  if (n >= 1000) return (n/1000).toFixed(n%1000===0?0:1).replace(/\.?0+$/,'') + 'K';
+  return n;
+}
+
+async function load() {
+  try {
+    const r = await fetch(API + '?t=' + Date.now());
+    const d = await r.json();
+    render(d);
+  } catch(e) {
+    document.getElementById('total-label').textContent = '⚠ Нет связи';
+  }
+}
+
+function render(d) {
+  // Updated time
+  const t = new Date(d.updated);
+  document.getElementById('live-time').textContent = t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
+
+  // Total
+  document.getElementById('total-label').textContent = 'Доход · ' + d.month;
+  document.getElementById('total-amount').textContent = fmt(d.total.amount) + ' ₸';
+  document.getElementById('total-sub').textContent = '≈ $' + d.total.usd.toLocaleString();
+  document.getElementById('total-change').textContent = '↑ ' + d.total.change + '%';
+
+  // Today
+  document.getElementById('today-value').textContent = fmt(d.today.amount) + ' ₸';
+  document.getElementById('today-sub').textContent = '↑ ' + d.today.change + '% vs вчера';
+
+  // Subscribers
+  document.getElementById('subs-new').textContent = '+' + d.subscribers.new;
+  document.getElementById('subs-total').textContent = fmt(d.subscribers.total) + ' всего';
+
+  // Niches
+  const maxAmt = Math.max(...d.niches.map(n => n.amount));
+  const list = document.getElementById('niches-list');
+  list.innerHTML = d.niches.map(n => `
+    <div class="niche-row">
+      <span class="niche-icon">${n.icon}</span>
+      <span class="niche-name">${n.name}</span>
+      <div class="niche-bar-bg"><div class="niche-bar" style="width:${(n.amount/maxAmt*100).toFixed(0)}%;background:${n.color}"></div></div>
+      <span class="niche-amount" style="color:${n.color}">${n.display}</span>
+    </div>
+  `).join('');
+
+  // Goal
+  const pct = (d.goal.current / d.goal.target * 100).toFixed(1);
+  document.getElementById('goal-title').textContent = 'Цель: ' + fmt(d.goal.target) + ' ₸/мес';
+  document.getElementById('goal-numbers').textContent = fmt(d.goal.current) + ' / ' + fmt(d.goal.target);
+  document.getElementById('goal-bar').style.width = pct + '%';
+
+  // Content
+  const c = d.content;
+  document.getElementById('content-title').textContent = 'Контент сегодня: ' + c.done + ' / ' + c.total;
+  let dots = '';
+  for (let i = 0; i < c.total; i++) {
+    if (i < c.done) dots += '<div class="content-dot dot-done">✓</div>';
+    else if (i === c.done) dots += '<div class="content-dot dot-progress">◉</div>';
+    else dots += '<div class="content-dot dot-pending"></div>';
+  }
+  document.getElementById('content-dots').innerHTML = dots;
+}
+
+// Загрузка + автообновление каждые 5 минут
+load();
+setInterval(load, 5 * 60 * 1000);
+</script>
 
 </body>
 </html>
