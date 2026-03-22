@@ -1,0 +1,9 @@
+name = "monopolie-bot"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# НЕ ВПИСЫВАЙ СЮДА — добавь через Cloudflare Dashboard → Settings → Variables
+# TELEGRAM_TOKEN = ""
+# GITHUB_TOKEN = ""
+# TELEGRAM_CHAT_ID = ""
