@@ -1,39 +1,50 @@
 {
-  "updated": "2026-03-23T18:00:00",
+  "updated": "2026-03-29T18:00:00",
   "month": "Март 2026",
   "currency": "₸",
   "total": {
     "amount": 0,
     "display": "0 ₸",
-    "usd": 0,
-    "change": 0
+    "usd": 0
   },
-  "today": {
-    "amount": 0,
-    "display": "0 ₸",
-    "change": 0
-  },
-  "subscribers": {
-    "new": 0,
-    "total": 0
-  },
-  "goal": {
-    "target": 1000000,
-    "current": 0,
-    "percent": 0
-  },
-  "content": {
-    "done": 0,
-    "total": 12
-  },
-  "niches": [
-    { "id": "vibecoder",  "icon": "⚡", "name": "VibeCoder",  "amount": 0, "display": "0", "color": "#00d4ff", "subs": 0 },
-    { "id": "ai-sites",   "icon": "🌐", "name": "AI Sites",   "amount": 0, "display": "0", "color": "#a855f7", "subs": 0 },
-    { "id": "ai-apps",    "icon": "📱", "name": "AI Apps",    "amount": 0, "display": "0", "color": "#10b981", "subs": 0 },
-    { "id": "ai-bots",    "icon": "🤖", "name": "AI Bots",    "amount": 0, "display": "0", "color": "#06b6d4", "subs": 0 },
-    { "id": "ai-content", "icon": "📝", "name": "AI Content", "amount": 0, "display": "0", "color": "#f59e0b", "subs": 0 },
-    { "id": "ai-design",  "icon": "🎨", "name": "AI Design",  "amount": 0, "display": "0", "color": "#ec4899", "subs": 0 },
-    { "id": "ai-saas",    "icon": "🚀", "name": "AI SaaS",    "amount": 0, "display": "0", "color": "#ef4444", "subs": 0 }
+  "projects": [
+    {
+      "id": "life-os",
+      "icon": "🧠",
+      "name": "Life OS",
+      "desc": "Автоматизация жизни",
+      "amount": 0,
+      "status": "active",
+      "color": "#00d4ff"
+    },
+    {
+      "id": "autobot",
+      "icon": "🤖",
+      "name": "AutoBot",
+      "desc": "ИИ зарабатывает сам",
+      "amount": 0,
+      "status": "dev",
+      "color": "#10b981"
+    },
+    {
+      "id": "x5",
+      "icon": "📱",
+      "name": "x5",
+      "desc": "Приложение Адильхана",
+      "amount": 0,
+      "status": "deadline",
+      "deadline": "2026-03-31",
+      "color": "#ef4444"
+    },
+    {
+      "id": "spk-bot",
+      "icon": "💬",
+      "name": "СПК Бот",
+      "desc": "Бот для клиентов",
+      "amount": 0,
+      "status": "active",
+      "color": "#a855f7"
+    }
   ],
   "months": [
     { "month": "Мар 2026", "amount": 0 }

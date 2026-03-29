@@ -2,907 +2,362 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>МОНОПОЛИЕ — Бизнес-Империя</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>МОНОПОЛИЕ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #00d4ff, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
+  .header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* Total card */
+  .total-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+  .total-label { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+  .total-amount { font-size: 48px; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
+  .total-sub { font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+
+  /* Projects */
+  .section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: rgba(255,255,255,0.6); }
+
+  .project-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+  .project-card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
+
+  .project-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .project-info { flex: 1; min-width: 0; }
+  .project-name { font-size: 15px; font-weight: 700; }
+  .project-desc { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+  .project-right { text-align: right; flex-shrink: 0; }
+  .project-amount { font-size: 16px; font-weight: 700; }
+  .project-status {
+    font-size: 10px; padding: 3px 8px; border-radius: 6px;
+    font-weight: 600; display: inline-block; margin-top: 4px;
+  }
+
+  .status-active { background: rgba(16,185,129,0.15); color: #10b981; }
+  .status-dev { background: rgba(0,212,255,0.15); color: #00d4ff; }
+  .status-deadline { background: rgba(239,68,68,0.2); color: #ef4444; }
+  .status-paused { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+
+  /* Income chart */
+  .chart-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 20px;
+  }
+  .chart-card canvas { width: 100% !important; height: 160px !important; }
+
+  /* Deadline banner */
+  .deadline-banner {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .deadline-banner .days { font-weight: 800; color: #ef4444; font-size: 22px; }
+  .deadline-banner .text { color: rgba(255,255,255,0.6); }
+  .deadline-banner .text strong { color: #fff; }
+
+  /* Updated timestamp */
+  .updated { text-align: center; font-size: 11px; color: rgba(255,255,255,0.15); margin-top: 24px; padding-bottom: 24px; }
+
+  /* PIN screen */
+  .pin-screen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0a0a0f;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 24px;
+  }
+  .pin-screen.hidden { display: none; }
+  .pin-logo { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, #00d4ff, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; }
+  .pin-dots { display: flex; gap: 12px; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); transition: all 0.2s; }
+  .pin-dot.filled { background: #00d4ff; border-color: #00d4ff; }
+  .pin-dot.error { background: #ef4444; border-color: #ef4444; animation: shake 0.4s; }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; }
+  .pin-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; font-size: 28px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .pin-btn:active { background: rgba(255,255,255,0.15); transform: scale(0.95); }
+  .pin-btn.empty { visibility: hidden; }
+  .pin-btn.del { font-size: 18px; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+</style>
+</head>
+<body>
+
+<!-- PIN Screen -->
+<div class="pin-screen" id="pinScreen">
+  <div class="pin-logo">M</div>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+  </div>
+  <div class="pin-pad">
+    <div class="pin-btn" onclick="pinPress(1)">1</div>
+    <div class="pin-btn" onclick="pinPress(2)">2</div>
+    <div class="pin-btn" onclick="pinPress(3)">3</div>
+    <div class="pin-btn" onclick="pinPress(4)">4</div>
+    <div class="pin-btn" onclick="pinPress(5)">5</div>
+    <div class="pin-btn" onclick="pinPress(6)">6</div>
+    <div class="pin-btn" onclick="pinPress(7)">7</div>
+    <div class="pin-btn" onclick="pinPress(8)">8</div>
+    <div class="pin-btn" onclick="pinPress(9)">9</div>
+    <div class="pin-btn empty"></div>
+    <div class="pin-btn" onclick="pinPress(0)">0</div>
+    <div class="pin-btn del" onclick="pinDel()">⌫</div>
+  </div>
+</div>
+
 <script>
-tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: { sans: ['Inter', 'sans-serif'] },
-      colors: {
-        dark: { 900: '#0a0a0f', 800: '#12121a', 700: '#1a1a2e', 600: '#252540' },
-        neon: { blue: '#00d4ff', purple: '#a855f7', pink: '#ec4899', green: '#10b981', orange: '#f59e0b', red: '#ef4444', cyan: '#06b6d4' }
-      }
+const PIN_HASH = '7982';
+let pinInput = '';
+
+function pinPress(n) {
+  if (pinInput.length >= 4) return;
+  pinInput += n;
+  updateDots();
+  if (pinInput.length === 4) {
+    if (pinInput === PIN_HASH) {
+      sessionStorage.setItem('m_auth', '1');
+      document.getElementById('pinScreen').classList.add('hidden');
+    } else {
+      document.querySelectorAll('.pin-dot').forEach(d => d.classList.add('error'));
+      setTimeout(() => {
+        pinInput = '';
+        updateDots();
+        document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('error'));
+      }, 500);
     }
   }
 }
+
+function pinDel() {
+  pinInput = pinInput.slice(0, -1);
+  updateDots();
+}
+
+function updateDots() {
+  document.querySelectorAll('.pin-dot').forEach((d, i) => {
+    d.classList.toggle('filled', i < pinInput.length);
+  });
+}
+
+if (sessionStorage.getItem('m_auth') === '1') {
+  document.getElementById('pinScreen').classList.add('hidden');
+}
 </script>
-<style>
-  body { background: #0a0a0f; }
-  .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
-  .glass-hover:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
-  .glow-blue { box-shadow: 0 0 30px rgba(0,212,255,0.15); }
-  .glow-purple { box-shadow: 0 0 30px rgba(168,85,247,0.15); }
-  .glow-green { box-shadow: 0 0 30px rgba(16,185,129,0.15); }
-  .glow-pink { box-shadow: 0 0 30px rgba(236,72,153,0.15); }
-  .glow-orange { box-shadow: 0 0 30px rgba(245,158,11,0.15); }
-  .glow-cyan { box-shadow: 0 0 30px rgba(6,182,212,0.15); }
-  .glow-red { box-shadow: 0 0 30px rgba(239,68,68,0.15); }
-  .gradient-text { background: linear-gradient(135deg, #00d4ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .progress-bar { background: linear-gradient(90deg, #00d4ff, #a855f7, #ec4899); background-size: 200% 100%; animation: gradient-shift 3s ease infinite; }
-  @keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-  .niche-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-  .niche-card:hover { transform: translateY(-4px) scale(1.01); }
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
-  .tab-active { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white; }
-  .tab-btn { transition: all 0.2s; }
-  .tab-btn:hover { background: rgba(255,255,255,0.06); }
-  .animate-in { animation: count-up 0.6s ease-out forwards; }
-  @keyframes count-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .platform-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
-  .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); }
-  .page { display: none; }
-  .page.active { display: block; }
-  .revenue-clickable { cursor: pointer; position: relative; }
-  .revenue-clickable:hover { opacity: 0.85; }
-  .revenue-clickable::after { content: 'Нажми — все месяцы'; position: absolute; bottom: -18px; left: 0; font-size: 10px; color: rgba(255,255,255,0.25); opacity: 0; transition: opacity 0.2s; }
-  .revenue-clickable:hover::after { opacity: 1; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
-  .cal-cell { min-height: 80px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 6px; font-size: 11px; transition: all 0.2s; }
-  .cal-cell:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
-  .cal-cell.today { border-color: #00d4ff; background: rgba(0,212,255,0.05); }
-  .cal-event { font-size: 9px; padding: 2px 4px; border-radius: 3px; margin-top: 2px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .funnel-step { position: relative; transition: all 0.3s; }
-  .funnel-step:hover { transform: scale(1.02); }
-  .speed-number { font-variant-numeric: tabular-nums; }
-  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-  .pulse-dot { animation: pulse-dot 2s infinite; }
-</style>
-</head>
-<body class="font-sans text-white min-h-screen">
 
-<!-- Header -->
-<header class="sticky top-0 z-50 glass border-b border-white/5">
-  <div class="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center font-black text-lg">M</div>
-      <div>
-        <h1 class="text-xl font-bold tracking-tight">МОНОПОЛИЕ</h1>
-        <p class="text-xs text-white/40">Бизнес-Империя — Command Center</p>
-      </div>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">M</div>
+      <h1>МОНОПОЛИЕ</h1>
     </div>
-    <nav class="flex gap-1 bg-white/5 rounded-xl p-1">
-      <button onclick="switchTab('dashboard')" class="tab-btn text-xs px-4 py-2 rounded-lg tab-active" data-tab="dashboard">Дашборд</button>
-      <button onclick="switchTab('calendar')" class="tab-btn text-xs px-4 py-2 rounded-lg text-white/40" data-tab="calendar">Планирование</button>
-      <button onclick="switchTab('funnels')" class="tab-btn text-xs px-4 py-2 rounded-lg text-white/40" data-tab="funnels">Воронки</button>
-      <button onclick="switchTab('warroom')" class="tab-btn text-xs px-4 py-2 rounded-lg text-white/40" data-tab="warroom">War Room</button>
-      <button onclick="switchTab('projections')" class="tab-btn text-xs px-4 py-2 rounded-lg text-white/40" data-tab="projections">Проекции</button>
-    </nav>
-    <div class="flex items-center gap-4">
-      <div class="text-right">
-        <p class="text-xs text-white/40" id="headerMonth">Загрузка...</p>
-        <p class="text-sm font-semibold text-neon-green"><span class="inline-block w-2 h-2 rounded-full bg-neon-green pulse-dot mr-1"></span>Live</p>
-      </div>
-      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-sm font-bold">T</div>
-    </div>
+    <div class="live-dot"></div>
   </div>
-</header>
 
-<!-- ===== TAB: DASHBOARD ===== -->
-<div id="page-dashboard" class="page active">
-
-<!-- Main Revenue Bar -->
-<section class="max-w-[1600px] mx-auto px-6 pt-6">
-  <div class="glass rounded-2xl p-6 glow-blue">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="revenue-clickable" onclick="openMonthlyModal()">
-        <p class="text-sm text-white/50 mb-1" id="revLabel">Загрузка...</p>
-        <div class="flex items-baseline gap-2">
-          <span class="text-5xl font-black gradient-text animate-in" id="revAmount">—</span>
-          <span class="text-xl text-white/40">₸</span>
-        </div>
-        <p class="text-sm mt-1" id="revChange"></p>
-      </div>
-      <div class="flex gap-6">
-        <div class="text-center">
-          <p class="text-3xl font-bold text-white" id="statNiches">7</p>
-          <p class="text-xs text-white/40">Ниш</p>
-        </div>
-        <div class="text-center">
-          <p class="text-3xl font-bold text-white" id="statSubs">—</p>
-          <p class="text-xs text-white/40">Подписчиков</p>
-        </div>
-        <div class="text-center">
-          <p class="text-3xl font-bold text-white" id="statContent">—</p>
-          <p class="text-xs text-white/40">Контент/мес</p>
-        </div>
-      </div>
-    </div>
-    <!-- Progress to goal -->
-    <div class="mt-5">
-      <div class="flex justify-between text-xs text-white/40 mb-2">
-        <span>Прогресс к цели: 1M ₸/мес</span>
-        <span id="goalProgress">0 / 1M ₸</span>
-      </div>
-      <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-        <div class="progress-bar h-full rounded-full" id="goalBar" style="width: 0%"></div>
-      </div>
-    </div>
+  <!-- Deadline banner -->
+  <div class="deadline-banner" id="deadlineBanner" style="display:none">
+    <div class="days" id="deadlineDays">—</div>
+    <div class="text"><strong id="deadlineName">—</strong><br><span id="deadlineText">—</span></div>
   </div>
-</section>
 
-<!-- Speed Metrics -->
-<section class="max-w-[1600px] mx-auto px-6 pt-4">
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">Сегодня</p>
-      <p class="text-xl font-bold mt-1 speed-number" id="speedToday">—</p>
-      <p class="text-[10px]" id="speedTodayChange"></p>
-    </div>
-    <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">Контент</p>
-      <p class="text-xl font-bold mt-1 speed-number" id="speedContent">—</p>
-      <p class="text-[10px] text-neon-blue" id="speedContentPct"></p>
-    </div>
-    <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">Новые подписчики</p>
-      <p class="text-xl font-bold mt-1 speed-number" id="speedSubs">—</p>
-      <p class="text-[10px] text-neon-purple">за сегодня</p>
-    </div>
-    <div class="glass rounded-xl p-4">
-      <p class="text-[10px] text-white/40 uppercase tracking-wider">USD эквивалент</p>
-      <p class="text-xl font-bold mt-1 speed-number" id="speedUsd">—</p>
-      <p class="text-[10px] text-white/30">общий доход</p>
-    </div>
+  <!-- Total income -->
+  <div class="total-card">
+    <div class="total-label" id="totalLabel">Доход за март 2026</div>
+    <div class="total-amount" id="totalAmount">0 ₸</div>
+    <div class="total-sub" id="totalSub">Старт с нуля</div>
   </div>
-</section>
 
-<!-- Niche Cards Grid -->
-<section class="max-w-[1600px] mx-auto px-6 pt-6">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-bold">Ниши</h2>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="nicheCards">
-    <!-- Generated dynamically -->
-  </div>
-</section>
+  <!-- Projects -->
+  <div class="section-title">Проекты</div>
+  <div id="projectsList"></div>
 
-<!-- Charts Section -->
-<section class="max-w-[1600px] mx-auto px-6 pt-6 pb-6">
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="glass rounded-2xl p-5 lg:col-span-2">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="font-bold">Рост дохода</h3>
-      </div>
-      <canvas id="revenueChart" height="180"></canvas>
-    </div>
-    <div class="glass rounded-2xl p-5">
-      <h3 class="font-bold mb-4">Доля по нишам</h3>
-      <canvas id="nicheChart" height="200"></canvas>
-      <div class="mt-4 space-y-2" id="nicheLegend">
-        <!-- Generated dynamically -->
-      </div>
-    </div>
+  <!-- Chart -->
+  <div class="chart-card">
+    <div class="section-title" style="margin-bottom:8px">Доход по месяцам</div>
+    <canvas id="revenueChart"></canvas>
   </div>
-</section>
 
+  <div class="updated" id="updatedTime">—</div>
 </div>
 
-<!-- ===== TAB: CALENDAR / ПЛАНИРОВАНИЕ ===== -->
-<div id="page-calendar" class="page">
-<section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center gap-4">
-      <h2 class="text-lg font-bold">Март 2026</h2>
-    </div>
-    <p class="text-sm text-white/40">Планируй контент — каждый день один шаг</p>
-  </div>
-
-  <!-- Day headers -->
-  <div class="cal-grid mb-1">
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Пн</div>
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Вт</div>
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Ср</div>
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Чт</div>
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Пт</div>
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Сб</div>
-    <div class="text-center text-xs text-white/30 py-2 font-medium">Вс</div>
-  </div>
-
-  <div class="cal-grid" id="calGrid"></div>
-</section>
-</div>
-
-<!-- ===== TAB: FUNNELS / ВОРОНКИ ===== -->
-<div id="page-funnels" class="page">
-<section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
-  <h2 class="text-lg font-bold mb-2">Планируемые воронки</h2>
-  <p class="text-sm text-white/40 mb-6">Структура воронок, которые ты построишь. Сейчас все на нуле — данные появятся с первым трафиком.</p>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-    <!-- VibeCoder Funnel -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-blue mb-1">⚡ VibeCoder — Воронка курсов</h3>
-      <p class="text-xs text-white/30 mb-4">Обучение вайбкодингу через контент</p>
-      <div class="space-y-3">
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Контент (посты, видео)</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/20" style="width:100%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Просмотры</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/15" style="width:60%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Подписки</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/10" style="width:30%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Лиды (запросы)</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-blue/8" style="width:10%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Продажи</span><span class="font-bold text-white/30">0 ₸</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
-        </div>
-      </div>
-      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
-        Цель: запустить воронку в апреле 2026
-      </div>
-    </div>
-
-    <!-- AI Sites Funnel -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-purple mb-1">🌐 AI Sites — Воронка заказов</h3>
-      <p class="text-xs text-white/30 mb-4">Сайты для бизнеса с помощью ИИ</p>
-      <div class="space-y-3">
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Портфолио / кейсы</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/20" style="width:100%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Просмотры</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/15" style="width:50%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Написали в DM</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-purple/10" style="width:15%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Оплатили</span><span class="font-bold text-white/30">0 ₸</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
-        </div>
-      </div>
-      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
-        Цель: первый заказ в апреле 2026
-      </div>
-    </div>
-
-    <!-- AI Bots Funnel -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-cyan mb-1">🤖 AI Bots — Воронка ботов</h3>
-      <p class="text-xs text-white/30 mb-4">Боты и автоматизация для бизнеса</p>
-      <div class="space-y-3">
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Демо-боты / контент</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/20" style="width:100%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Попробовали бот</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/15" style="width:50%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Запросили бот</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-cyan/10" style="width:15%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Заказали</span><span class="font-bold text-white/30">0 ₸</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
-        </div>
-      </div>
-      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
-        Цель: первый заказ на бот в мае 2026
-      </div>
-    </div>
-
-    <!-- AI SaaS Funnel -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold text-neon-red mb-1">🚀 AI SaaS — Воронка подписок</h3>
-      <p class="text-xs text-white/30 mb-4">Свои микро-продукты по подписке</p>
-      <div class="space-y-3">
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Лендинг / демо</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/20" style="width:100%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Регистрации</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/15" style="width:40%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Активные пользователи</span><span class="font-bold text-white/30">0</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-red/10" style="width:15%"></div></div>
-        </div>
-        <div class="funnel-step">
-          <div class="flex justify-between text-sm mb-1"><span class="text-white/60">Оплатили подписку</span><span class="font-bold text-white/30">0 ₸</span></div>
-          <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full bg-neon-green/20" style="width:3%"></div></div>
-        </div>
-      </div>
-      <div class="mt-4 pt-4 border-t border-white/5 text-xs text-white/30">
-        Цель: MVP продукта к июню 2026
-      </div>
-    </div>
-
-  </div>
-</section>
-</div>
-
-<!-- ===== TAB: WAR ROOM ===== -->
-<div id="page-warroom" class="page">
-<section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
-  <h2 class="text-lg font-bold mb-2">War Room</h2>
-  <p class="text-sm text-white/40 mb-6">Стратегический центр. Ты начинаешь с нуля — но у тебя есть план.</p>
-
-  <!-- OKRs -->
-  <div class="glass rounded-2xl p-6 mb-6">
-    <h3 class="font-bold mb-4">OKR — Q2 2026 (Апр-Июн)</h3>
-    <div class="space-y-4">
-      <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span class="font-medium">O1: Запустить первый аккаунт и выпустить 30 единиц контента</span>
-          <span class="text-white/30 font-bold">0%</span>
-        </div>
-        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-white/10" style="width:0%"></div></div>
-        <div class="text-xs text-white/30 mt-1">KR1: Выбрать нишу для старта | KR2: Создать аккаунт | KR3: 30 постов/видео</div>
-      </div>
-      <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span class="font-medium">O2: Набрать первые 1,000 подписчиков</span>
-          <span class="text-white/30 font-bold">0%</span>
-        </div>
-        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-white/10" style="width:0%"></div></div>
-        <div class="text-xs text-white/30 mt-1">KR1: 100 подписчиков за первый месяц | KR2: 500 за второй | KR3: 1000 к концу Q2</div>
-      </div>
-      <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span class="font-medium">O3: Получить первый доход</span>
-          <span class="text-white/30 font-bold">0%</span>
-        </div>
-        <div class="w-full h-2 bg-white/5 rounded-full"><div class="h-full rounded-full bg-white/10" style="width:0%"></div></div>
-        <div class="text-xs text-white/30 mt-1">KR1: Первый клиент | KR2: Первая оплата | KR3: Повторный заказ</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- SWOT -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold mb-4">SWOT-анализ</h3>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="bg-neon-green/5 border border-neon-green/20 rounded-xl p-3">
-          <p class="text-xs font-bold text-neon-green mb-2">СИЛЬНЫЕ СТОРОНЫ</p>
-          <ul class="text-xs text-white/60 space-y-1">
-            <li>ИИ-симбиоз с Claude</li>
-            <li>7 ниш запланировано</li>
-            <li>Молодость и скорость (21 год)</li>
-            <li>Нулевые расходы на старте</li>
-          </ul>
-        </div>
-        <div class="bg-neon-red/5 border border-neon-red/20 rounded-xl p-3">
-          <p class="text-xs font-bold text-neon-red mb-2">СЛАБЫЕ СТОРОНЫ</p>
-          <ul class="text-xs text-white/60 space-y-1">
-            <li>Нет аудитории</li>
-            <li>Нет опыта продаж</li>
-            <li>Нет бюджета на рекламу</li>
-            <li>Нет портфолио</li>
-          </ul>
-        </div>
-        <div class="bg-neon-blue/5 border border-neon-blue/20 rounded-xl p-3">
-          <p class="text-xs font-bold text-neon-blue mb-2">ВОЗМОЖНОСТИ</p>
-          <ul class="text-xs text-white/60 space-y-1">
-            <li>ИИ-рынок растёт 40%/год</li>
-            <li>Мало конкурентов в KZ</li>
-            <li>Все инструменты бесплатны</li>
-            <li>Органический рост через контент</li>
-          </ul>
-        </div>
-        <div class="bg-neon-orange/5 border border-neon-orange/20 rounded-xl p-3">
-          <p class="text-xs font-bold text-neon-orange mb-2">УГРОЗЫ</p>
-          <ul class="text-xs text-white/60 space-y-1">
-            <li>Потеря мотивации</li>
-            <li>Конкуренты быстрее</li>
-            <li>Изменения алгоритмов</li>
-            <li>Выгорание без результатов</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Next Moves -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="font-bold mb-4">Первые 3 хода</h3>
-      <div class="space-y-3">
-        <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">1.</span>
-          <div>
-            <p class="text-sm font-medium">Создать первый контент</p>
-            <p class="text-xs text-white/40">Выбрать одну нишу, записать 3 поста/видео. Не идеально — просто начать.</p>
-            <p class="text-xs text-neon-red mt-1">Приоритет: СЕЙЧАС</p>
-          </div>
-        </div>
-        <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">2.</span>
-          <div>
-            <p class="text-sm font-medium">Запустить Telegram-канал</p>
-            <p class="text-xs text-white/40">Создать канал, оформить, выложить первые посты. Пригласить друзей.</p>
-            <p class="text-xs text-neon-orange mt-1">Приоритет: ЭТА НЕДЕЛЯ</p>
-          </div>
-        </div>
-        <div class="flex gap-3 items-start bg-white/5 rounded-xl p-3">
-          <span class="text-lg">3.</span>
-          <div>
-            <p class="text-sm font-medium">Найти первого клиента</p>
-            <p class="text-xs text-white/40">Сделать первый проект бесплатно или за минимум. Получить кейс и отзыв.</p>
-            <p class="text-xs text-neon-blue mt-1">Приоритет: ДО КОНЦА МЕСЯЦА</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-</div>
-
-<!-- ===== TAB: PROJECTIONS / ПРОЕКЦИИ ===== -->
-<div id="page-projections" class="page">
-<section class="max-w-[1600px] mx-auto px-6 pt-6 pb-8">
-  <h2 class="text-lg font-bold mb-2">Проекции роста</h2>
-  <p class="text-sm text-white/40 mb-6">Когда первый 1M ₸/мес? Три сценария от нуля.</p>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-    <div class="glass rounded-2xl p-6 glow-green">
-      <p class="text-xs text-white/40 mb-1">Текущий доход</p>
-      <p class="text-3xl font-black gradient-text" id="projCurrent">0 ₸</p>
-      <p class="text-xs text-white/30">старт с нуля</p>
-    </div>
-    <div class="glass rounded-2xl p-6 glow-purple">
-      <p class="text-xs text-white/40 mb-1">Цель</p>
-      <p class="text-3xl font-black text-neon-purple">1M ₸/мес</p>
-      <p class="text-xs text-white/30">первый milestone</p>
-    </div>
-    <div class="glass rounded-2xl p-6 glow-blue">
-      <p class="text-xs text-white/40 mb-1">Ключевая метрика</p>
-      <p class="text-3xl font-black text-neon-blue">Первая продажа</p>
-      <p class="text-xs text-white/30">всё начинается с неё</p>
-    </div>
-  </div>
-
-  <div class="glass rounded-2xl p-6">
-    <h3 class="font-bold mb-4">Прогноз на 12 месяцев (после первой продажи)</h3>
-    <canvas id="projectionChart" height="250"></canvas>
-  </div>
-
-  <!-- Scenario Planning -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
-    <div class="glass rounded-2xl p-5 border-l-4 border-neon-red">
-      <h4 class="text-sm font-bold text-neon-red mb-2">Медленный старт</h4>
-      <p class="text-xs text-white/60 mb-2">Первая продажа через 3 месяца, рост +15%/мес</p>
-      <p class="text-2xl font-bold">~200K ₸</p>
-      <p class="text-xs text-white/40">через 12 месяцев</p>
-      <p class="text-xs text-white/30 mt-2">Если мало контента, нет фокуса</p>
-    </div>
-    <div class="glass rounded-2xl p-5 border-l-4 border-neon-blue">
-      <h4 class="text-sm font-bold text-neon-blue mb-2">Реалистичный</h4>
-      <p class="text-xs text-white/60 mb-2">Первая продажа через 1 месяц, рост +30%/мес</p>
-      <p class="text-2xl font-bold">~500K ₸</p>
-      <p class="text-xs text-white/40">через 12 месяцев</p>
-      <p class="text-xs text-white/30 mt-2">Стабильный контент + активные продажи</p>
-    </div>
-    <div class="glass rounded-2xl p-5 border-l-4 border-neon-green">
-      <h4 class="text-sm font-bold text-neon-green mb-2">Агрессивный</h4>
-      <p class="text-xs text-white/60 mb-2">Первая продажа через 2 недели, рост +50%/мес</p>
-      <p class="text-2xl font-bold">~1.5M ₸</p>
-      <p class="text-xs text-white/40">через 12 месяцев</p>
-      <p class="text-xs text-white/30 mt-2">Максимум контента + вирусный рост + несколько ниш</p>
-    </div>
-  </div>
-</section>
-</div>
-
-<!-- ===== MONTHLY DRILL-DOWN MODAL ===== -->
-<div id="monthlyModal" class="fixed inset-0 z-[100] modal-overlay hidden flex items-center justify-center p-4" onclick="closeMonthlyModal(event)">
-  <div class="glass rounded-2xl p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold">Доход по месяцам</h2>
-      <button onclick="document.getElementById('monthlyModal').classList.add('hidden')" class="text-white/40 hover:text-white text-xl">&#10005;</button>
-    </div>
-    <div class="space-y-3" id="monthlyList">
-      <!-- Generated dynamically -->
-    </div>
-  </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
 const API = './api/data.json';
-let DATA = null;
-let revenueChartInstance = null;
-let nicheChartInstance = null;
-let projectionChartInstance = null;
-const sparkCharts = [];
+let chartInstance = null;
 
-// Format numbers: K / M
+const STATUS_MAP = {
+  active: { label: 'Активен', class: 'status-active' },
+  dev: { label: 'В разработке', class: 'status-dev' },
+  deadline: { label: 'Дедлайн', class: 'status-deadline' },
+  paused: { label: 'Пауза', class: 'status-paused' }
+};
+
 function fmt(n) {
-  if (n >= 1000000) return (n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 2).replace(/\.?0+$/, '') + 'M';
-  if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1).replace(/\.?0+$/, '') + 'K';
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '') + 'K';
   return String(n);
 }
 
-// Color name to glow class mapping
-const glowMap = {
-  '#00d4ff': 'glow-blue',
-  '#a855f7': 'glow-purple',
-  '#10b981': 'glow-green',
-  '#06b6d4': 'glow-cyan',
-  '#f59e0b': 'glow-orange',
-  '#ec4899': 'glow-pink',
-  '#ef4444': 'glow-red'
-};
+function daysLeft(dateStr) {
+  const now = new Date();
+  const target = new Date(dateStr);
+  const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+  return diff;
+}
 
-// Niche descriptions
-const nicheDesc = {
-  'vibecoder': 'Обучение вайбкодингу',
-  'ai-sites': 'Сайты под ключ',
-  'ai-apps': 'Мобильные приложения',
-  'ai-bots': 'Боты и автоматизация',
-  'ai-content': 'Контент для бизнеса',
-  'ai-design': 'Дизайн через ИИ',
-  'ai-saas': 'Свои микро-продукты'
-};
+function pluralDays(n) {
+  if (n <= 0) return 'Просрочено!';
+  const abs = Math.abs(n);
+  const last = abs % 10;
+  const tens = abs % 100;
+  if (last === 1 && tens !== 11) return abs + ' день';
+  if (last >= 2 && last <= 4 && (tens < 12 || tens > 14)) return abs + ' дня';
+  return abs + ' дней';
+}
 
-// ===== FETCH & RENDER =====
 async function load() {
   try {
     const r = await fetch(API + '?t=' + Date.now());
     const d = await r.json();
-    DATA = d;
     render(d);
   } catch (e) {
-    document.getElementById('revLabel').textContent = 'Нет связи с данными';
+    document.getElementById('totalLabel').textContent = 'Нет связи';
   }
 }
 
 function render(d) {
-  // Header month
-  document.getElementById('headerMonth').textContent = d.month;
+  // Total
+  document.getElementById('totalLabel').textContent = 'Доход за ' + d.month.toLowerCase();
+  document.getElementById('totalAmount').textContent = d.total.amount > 0 ? fmt(d.total.amount) + ' ₸' : '0 ₸';
 
-  // Main revenue card
-  document.getElementById('revLabel').textContent = 'Общий доход за ' + d.month.toLowerCase();
-  document.getElementById('revAmount').textContent = d.total.amount > 0 ? fmt(d.total.amount) : '0';
-  const changeEl = document.getElementById('revChange');
-  if (d.total.change > 0) {
-    changeEl.textContent = '\u2191 ' + d.total.change + '% vs прошлый месяц';
-    changeEl.className = 'text-sm mt-1 text-neon-green';
-  } else if (d.total.amount === 0) {
-    changeEl.textContent = 'Старт с нуля — первый доход впереди';
-    changeEl.className = 'text-sm mt-1 text-white/30';
+  if (d.total.amount > 0 && d.total.usd > 0) {
+    document.getElementById('totalSub').textContent = '≈ $' + d.total.usd;
   } else {
-    changeEl.textContent = d.total.change + '%';
-    changeEl.className = 'text-sm mt-1 text-neon-red';
+    document.getElementById('totalSub').textContent = 'Старт с нуля';
   }
 
-  // Stats in revenue bar
-  document.getElementById('statNiches').textContent = d.niches.length;
-  document.getElementById('statSubs').textContent = d.subscribers.total > 0 ? fmt(d.subscribers.total) : '0';
-  document.getElementById('statContent').textContent = d.content.done + ' / ' + d.content.total;
-
-  // Goal progress
-  const goalPct = d.goal.target > 0 ? (d.goal.current / d.goal.target * 100) : 0;
-  document.getElementById('goalProgress').textContent = fmt(d.goal.current) + ' / ' + fmt(d.goal.target) + ' ₸';
-  document.getElementById('goalBar').style.width = goalPct.toFixed(2) + '%';
-
-  // Speed metrics
-  document.getElementById('speedToday').textContent = d.today.amount > 0 ? fmt(d.today.amount) + ' ₸' : '0 ₸';
-  const todayChangeEl = document.getElementById('speedTodayChange');
-  if (d.today.change > 0) {
-    todayChangeEl.textContent = '\u2191 ' + d.today.change + '% vs вчера';
-    todayChangeEl.className = 'text-[10px] text-neon-green';
-  } else {
-    todayChangeEl.textContent = 'нет данных';
-    todayChangeEl.className = 'text-[10px] text-white/30';
+  // Deadline banner
+  const deadlineProject = d.projects.find(p => p.deadline);
+  if (deadlineProject) {
+    const days = daysLeft(deadlineProject.deadline);
+    const banner = document.getElementById('deadlineBanner');
+    banner.style.display = 'flex';
+    document.getElementById('deadlineDays').textContent = days <= 0 ? '!' : days;
+    document.getElementById('deadlineName').textContent = deadlineProject.name;
+    document.getElementById('deadlineText').textContent = days <= 0 ? 'Дедлайн прошёл!' : pluralDays(days) + ' до дедлайна';
   }
 
-  document.getElementById('speedContent').textContent = d.content.done + ' / ' + d.content.total;
-  const contentPct = d.content.total > 0 ? Math.round(d.content.done / d.content.total * 100) : 0;
-  document.getElementById('speedContentPct').textContent = contentPct + '% плана';
-
-  document.getElementById('speedSubs').textContent = d.subscribers.new > 0 ? '+' + d.subscribers.new : '0';
-  document.getElementById('speedUsd').textContent = d.total.usd > 0 ? '$' + d.total.usd.toLocaleString() : '$0';
-
-  // Niche cards
-  renderNicheCards(d.niches);
-
-  // Charts
-  renderRevenueChart(d.months, d.niches);
-  renderNicheDonut(d.niches);
-
-  // Monthly modal
-  renderMonthlyModal(d.months);
-
-  // Projection current
-  document.getElementById('projCurrent').textContent = d.total.amount > 0 ? fmt(d.total.amount) + ' ₸' : '0 ₸';
-}
-
-// ===== NICHE CARDS =====
-function renderNicheCards(niches) {
-  const container = document.getElementById('nicheCards');
-
-  // Destroy old sparkline charts
-  sparkCharts.forEach(c => c.destroy());
-  sparkCharts.length = 0;
-
-  container.innerHTML = niches.map((n, i) => {
-    const glow = glowMap[n.color] || 'glow-blue';
-    const desc = nicheDesc[n.id] || '';
-    const colorHex = n.color;
+  // Projects
+  const list = document.getElementById('projectsList');
+  list.innerHTML = d.projects.map(p => {
+    const status = STATUS_MAP[p.status] || STATUS_MAP.active;
     return `
-    <div class="glass rounded-2xl p-5 niche-card ${glow}">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:${colorHex}20">${n.icon}</div>
-          <div>
-            <h3 class="font-bold text-sm">${n.name}</h3>
-            <p class="text-xs text-white/40">${desc}</p>
-          </div>
-        </div>
+    <div class="project-card">
+      <div class="project-icon" style="background:${p.color}15">
+        ${p.icon}
       </div>
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span class="text-white/50">Доход</span><span class="font-semibold" style="color:${colorHex}">${n.amount > 0 ? fmt(n.amount) + ' ₸' : '0 ₸'}</span></div>
-        <div class="flex justify-between text-sm"><span class="text-white/50">Подписчики</span><span class="font-medium">${n.subs > 0 ? fmt(n.subs) : '0'}</span></div>
+      <div class="project-info">
+        <div class="project-name">${p.name}</div>
+        <div class="project-desc">${p.desc}</div>
       </div>
-      <div class="mt-3 h-8"><canvas class="spark-dynamic" data-color="${colorHex}" data-idx="${i}"></canvas></div>
+      <div class="project-right">
+        <div class="project-amount" style="color:${p.color}">${p.amount > 0 ? fmt(p.amount) + ' ₸' : '0 ₸'}</div>
+        <span class="project-status ${status.class}">${status.label}</span>
+      </div>
     </div>`;
   }).join('');
 
-  // Render sparkline charts
-  document.querySelectorAll('.spark-dynamic').forEach(canvas => {
-    const color = canvas.dataset.color;
-    // For now show a flat line (zeros), will update when months have data
-    const values = [0, 0, 0, 0, 0, 0];
-    const chart = new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels: values.map(() => ''),
-        datasets: [{
-          data: values,
-          borderColor: color,
-          borderWidth: 2,
-          fill: true,
-          backgroundColor: color + '15',
-          tension: 0.4,
-          pointRadius: 0
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { x: { display: false }, y: { display: false, min: 0 } }
-      }
-    });
-    sparkCharts.push(chart);
-  });
+  // Chart
+  renderChart(d.months);
+
+  // Updated
+  const upd = new Date(d.updated);
+  document.getElementById('updatedTime').textContent = 'Обновлено ' + upd.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
-// ===== REVENUE CHART =====
-function renderRevenueChart(months, niches) {
-  if (revenueChartInstance) revenueChartInstance.destroy();
+function renderChart(months) {
+  if (chartInstance) chartInstance.destroy();
   const ctx = document.getElementById('revenueChart').getContext('2d');
-  const labels = months.map(m => m.month);
-  const totalData = months.map(m => m.amount);
 
-  revenueChartInstance = new Chart(ctx, {
-    type: 'line',
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
     data: {
-      labels: labels,
+      labels: months.map(m => m.month),
       datasets: [{
-        label: 'Общий доход',
-        data: totalData,
-        borderColor: '#00d4ff',
-        backgroundColor: '#00d4ff10',
-        fill: true,
-        tension: 0.4,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: '#00d4ff'
+        data: months.map(m => m.amount),
+        backgroundColor: months.map((_, i) => i === months.length - 1 ? '#00d4ff' : 'rgba(0,212,255,0.3)'),
+        borderRadius: 8,
+        barThickness: months.length === 1 ? 60 : undefined
       }]
     },
     options: {
       responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } } },
+      plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } },
+        x: {
+          grid: { display: false },
+          ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 11 } }
+        },
         y: {
-          grid: { color: 'rgba(255,255,255,0.03)' },
-          ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 }, callback: v => v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v },
-          min: 0
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: {
+            color: 'rgba(255,255,255,0.3)',
+            font: { size: 11 },
+            callback: v => v >= 1000 ? fmt(v) : v
+          },
+          beginAtZero: true
         }
       }
     }
   });
 }
 
-// ===== NICHE DONUT =====
-function renderNicheDonut(niches) {
-  if (nicheChartInstance) nicheChartInstance.destroy();
-  const ctx = document.getElementById('nicheChart');
-  const totalAmount = niches.reduce((s, n) => s + n.amount, 0);
-
-  // If all zeros, show equal slices
-  const data = totalAmount > 0 ? niches.map(n => n.amount) : niches.map(() => 1);
-  const colors = niches.map(n => n.color);
-
-  nicheChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: niches.map(n => n.name),
-      datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, spacing: 2 }]
-    },
-    options: { responsive: true, cutout: '70%', plugins: { legend: { display: false } } }
-  });
-
-  // Legend
-  const legend = document.getElementById('nicheLegend');
-  legend.innerHTML = niches.map(n => {
-    const pct = totalAmount > 0 ? (n.amount / totalAmount * 100).toFixed(1) : (100 / niches.length).toFixed(1);
-    return `
-    <div class="flex items-center justify-between text-xs">
-      <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full" style="background:${n.color}"></div><span class="text-white/60">${n.name}</span></div>
-      <span class="font-medium">${totalAmount > 0 ? pct + '%' : '—'}</span>
-    </div>`;
-  }).join('');
-}
-
-// ===== MONTHLY MODAL =====
-function renderMonthlyModal(months) {
-  const container = document.getElementById('monthlyList');
-  if (!months || months.length === 0) {
-    container.innerHTML = '<p class="text-sm text-white/40">Пока нет данных за прошлые месяцы</p>';
-    return;
-  }
-  container.innerHTML = months.map((m, i) => {
-    const isCurrent = i === months.length - 1;
-    const prevAmt = i > 0 ? months[i - 1].amount : 0;
-    const change = prevAmt > 0 ? ((m.amount - prevAmt) / prevAmt * 100).toFixed(1) : 0;
-
-    if (isCurrent) {
-      return `
-      <div class="flex items-center justify-between p-4 ${m.amount > 0 ? 'bg-neon-green/5 border border-neon-green/20' : 'bg-white/5 border border-white/10'} rounded-xl">
-        <div><p class="font-bold">${m.month}</p><p class="text-xs text-white/40">Текущий месяц</p></div>
-        <div class="text-right">
-          <p class="text-xl font-bold ${m.amount > 0 ? 'text-neon-green' : 'text-white/30'}">${m.amount > 0 ? fmt(m.amount) + ' ₸' : '0 ₸'}</p>
-          ${change > 0 ? '<p class="text-xs text-neon-green">\u2191 ' + change + '%</p>' : ''}
-        </div>
-      </div>`;
-    }
-    return `
-    <div class="flex items-center justify-between p-4 glass rounded-xl">
-      <div><p class="font-bold">${m.month}</p></div>
-      <div class="text-right">
-        <p class="text-xl font-bold">${m.amount > 0 ? fmt(m.amount) + ' ₸' : '0 ₸'}</p>
-        ${change > 0 ? '<p class="text-xs text-neon-green">\u2191 ' + change + '%</p>' : ''}
-      </div>
-    </div>`;
-  }).reverse().join('');
-}
-
-// ===== CALENDAR =====
-function renderCalendar() {
-  const grid = document.getElementById('calGrid');
-  grid.innerHTML = '';
-
-  // March 2026 starts on Sunday, offset = 6 (Mon-based grid)
-  const startDay = 6;
-  const today = 23;
-  const daysInMonth = 31;
-
-  // Only 2 placeholder events for someone just starting
-  const calEvents = {
-    24: [{ t: 'Создать первый пост', c: '#00d4ff' }],
-    25: [{ t: 'Запустить канал', c: '#a855f7' }]
-  };
-
-  for (let i = 0; i < startDay; i++) {
-    grid.innerHTML += '<div class="cal-cell opacity-30"></div>';
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = d === today;
-    const events = calEvents[d] || [];
-    let evHtml = events.map(e =>
-      `<div class="cal-event" style="background:${e.c}20;color:${e.c};border-left:2px solid ${e.c}">${e.t}</div>`
-    ).join('');
-    grid.innerHTML += `<div class="cal-cell ${isToday ? 'today' : ''}">
-      <div class="text-xs font-medium ${isToday ? 'text-neon-blue' : 'text-white/50'} mb-1">${d}</div>
-      ${evHtml}
-    </div>`;
-  }
-}
-
-// ===== PROJECTION CHART =====
-function renderProjectionChart() {
-  if (projectionChartInstance) return;
-
-  const ctx = document.getElementById('projectionChart');
-  const months = ['Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек', 'Янв\'27', 'Фев', 'Мар\'27'];
-
-  // Scenarios starting from first sale
-  // Slow: first sale at month 3 (5K), then +15%/month
-  const slow = months.map((_, i) => {
-    if (i < 2) return 0;
-    return Math.round(5000 * Math.pow(1.15, i - 2));
-  });
-
-  // Realistic: first sale at month 1 (10K), then +30%/month
-  const realistic = months.map((_, i) => {
-    if (i < 1) return 0;
-    return Math.round(10000 * Math.pow(1.30, i - 1));
-  });
-
-  // Aggressive: first sale immediately (20K), then +50%/month
-  const aggressive = months.map((_, i) => {
-    return Math.round(20000 * Math.pow(1.50, i));
-  });
-
-  projectionChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: months,
-      datasets: [
-        { label: 'Медленный (+15%)', data: slow, borderColor: '#ef4444', borderDash: [5, 5], borderWidth: 2, tension: 0.4, pointRadius: 2, fill: false },
-        { label: 'Реалистичный (+30%)', data: realistic, borderColor: '#00d4ff', borderWidth: 3, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#00d4ff', fill: true, backgroundColor: '#00d4ff10' },
-        { label: 'Агрессивный (+50%)', data: aggressive, borderColor: '#10b981', borderDash: [5, 5], borderWidth: 2, tension: 0.4, pointRadius: 2, fill: false },
-        { label: 'Цель: 1M ₸', data: months.map(() => 1000000), borderColor: '#a855f750', borderDash: [10, 5], borderWidth: 1, pointRadius: 0, fill: false }
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } } },
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.4)' } },
-        y: {
-          grid: { color: 'rgba(255,255,255,0.03)' },
-          ticks: { color: 'rgba(255,255,255,0.4)', callback: v => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v }
-        }
-      }
-    }
-  });
-}
-
-// ===== TAB SWITCHING =====
-function switchTab(tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + tab).classList.add('active');
-  document.querySelectorAll('[data-tab]').forEach(b => {
-    b.classList.remove('tab-active');
-    b.classList.add('text-white/40');
-  });
-  const btn = document.querySelector('[data-tab="' + tab + '"]');
-  btn.classList.add('tab-active');
-  btn.classList.remove('text-white/40');
-  if (tab === 'projections') renderProjectionChart();
-}
-
-// ===== MODAL =====
-function openMonthlyModal() { document.getElementById('monthlyModal').classList.remove('hidden'); }
-function closeMonthlyModal(e) { if (e.target === e.currentTarget) document.getElementById('monthlyModal').classList.add('hidden'); }
-
-// ===== INIT =====
-renderCalendar();
 load();
 setInterval(load, 5 * 60 * 1000);
 </script>
-
 </body>
 </html>
