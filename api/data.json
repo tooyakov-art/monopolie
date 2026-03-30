@@ -1,11 +1,16 @@
 {
-  "updated": "2026-03-29T18:00:00",
+  "updated": "2026-03-30T12:00:00",
   "month": "Март 2026",
   "currency": "₸",
   "total": {
     "amount": 0,
     "display": "0 ₸",
     "usd": 0
+  },
+  "focus": {
+    "question": "Какая одна вещь принесёт первые деньги?",
+    "answer": "Закрыть СПК Бот → первый платящий клиент",
+    "why": "0 доходов = 0 данных. Без первой продажи всё остальное — теория."
   },
   "projects": [
     {
@@ -15,38 +20,46 @@
       "desc": "Автоматизация жизни",
       "amount": 0,
       "status": "active",
-      "color": "#00d4ff"
+      "color": "#00d4ff",
+      "next": "Интеграция с Монополие"
     },
     {
       "id": "autobot",
-      "icon": "🤖",
+      "icon": "👁",
       "name": "AutoBot",
-      "desc": "ИИ зарабатывает сам",
+      "desc": "Скрытый проект",
       "amount": 0,
-      "status": "dev",
-      "color": "#10b981"
-    },
-    {
-      "id": "x5",
-      "icon": "📱",
-      "name": "x5",
-      "desc": "Приложение Адильхана",
-      "amount": 0,
-      "status": "deadline",
-      "deadline": "2026-03-31",
-      "color": "#ef4444"
+      "status": "hidden",
+      "color": "#10b981",
+      "next": "—"
     },
     {
       "id": "spk-bot",
       "icon": "💬",
       "name": "СПК Бот",
-      "desc": "Бот для клиентов",
+      "desc": "Продажа ботов",
       "amount": 0,
       "status": "active",
-      "color": "#a855f7"
+      "color": "#a855f7",
+      "owner": "Адильхан",
+      "next": "Доделать бота качественно",
+      "blocker": "Документы через 1С — нужна связка бот→менеджер"
+    },
+    {
+      "id": "x5",
+      "icon": "📱",
+      "name": "x5",
+      "desc": "Приложение",
+      "amount": 0,
+      "status": "deadline",
+      "deadline": "2026-03-31",
+      "color": "#ef4444",
+      "owner": "Адильхан",
+      "next": "Публикация App Store + Google Play"
     }
   ],
   "months": [
     { "month": "Мар 2026", "amount": 0 }
-  ]
+  ],
+  "streak": 0
 }

@@ -14,61 +14,125 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0a0a0f; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
-
-  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 40px; }
 
   /* Header */
-  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #00d4ff, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; }
-  .header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #00d4ff, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+  .header h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .header-right { font-size: 11px; color: rgba(255,255,255,0.25); text-align: right; }
 
-  /* Total card */
-  .total-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
-  .total-label { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
-  .total-amount { font-size: 48px; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
-  .total-sub { font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+  /* Focus card — THE ONE THING */
+  .focus-card {
+    background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(245,158,11,0.08));
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .focus-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+    background: linear-gradient(180deg, #ef4444, #f59e0b);
+    border-radius: 4px 0 0 4px;
+  }
+  .focus-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #ef4444; font-weight: 700; margin-bottom: 8px; }
+  .focus-question { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 6px; font-style: italic; }
+  .focus-answer { font-size: 18px; font-weight: 800; line-height: 1.3; }
+  .focus-why { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
 
-  /* Projects */
-  .section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: rgba(255,255,255,0.6); }
+  /* Deadline banner */
+  .deadline-banner {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.15);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .deadline-days { font-weight: 900; color: #ef4444; font-size: 28px; line-height: 1; min-width: 36px; text-align: center; }
+  .deadline-info { flex: 1; }
+  .deadline-name { font-size: 14px; font-weight: 700; }
+  .deadline-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .deadline-urgent { animation: urgentPulse 1.5s infinite; }
+  @keyframes urgentPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 
+  /* Income */
+  .income-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .income-label { font-size: 12px; color: rgba(255,255,255,0.35); }
+  .income-amount { font-size: 52px; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; margin: 4px 0; }
+  .income-goal { font-size: 11px; color: rgba(255,255,255,0.2); }
+  .income-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 12px; overflow: hidden; }
+  .income-bar-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #a855f7); border-radius: 4px; transition: width 0.6s ease; }
+
+  /* Section */
+  .section-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Project cards */
   .project-card {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 16px;
     padding: 16px;
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: transform 0.2s, background 0.2s;
-    cursor: pointer;
+    transition: transform 0.15s;
   }
-  .project-card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
-
+  .project-card:active { transform: scale(0.98); }
+  .project-top { display: flex; align-items: center; gap: 12px; }
   .project-icon {
-    width: 44px; height: 44px; border-radius: 12px;
+    width: 40px; height: 40px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
+    font-size: 18px; flex-shrink: 0;
   }
   .project-info { flex: 1; min-width: 0; }
   .project-name { font-size: 15px; font-weight: 700; }
-  .project-desc { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px; }
-  .project-right { text-align: right; flex-shrink: 0; }
-  .project-amount { font-size: 16px; font-weight: 700; }
-  .project-status {
-    font-size: 10px; padding: 3px 8px; border-radius: 6px;
-    font-weight: 600; display: inline-block; margin-top: 4px;
-  }
+  .project-meta { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .project-desc { font-size: 11px; color: rgba(255,255,255,0.3); }
+  .owner-tag { font-size: 9px; color: rgba(168,85,247,0.7); background: rgba(168,85,247,0.1); padding: 1px 6px; border-radius: 4px; }
+  .project-amount { font-size: 16px; font-weight: 800; flex-shrink: 0; }
+  .project-status { font-size: 9px; padding: 2px 7px; border-radius: 5px; font-weight: 700; display: inline-block; }
 
   .status-active { background: rgba(16,185,129,0.15); color: #10b981; }
   .status-dev { background: rgba(0,212,255,0.15); color: #00d4ff; }
   .status-deadline { background: rgba(239,68,68,0.2); color: #ef4444; }
   .status-paused { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+  .status-hidden { background: rgba(16,185,129,0.06); color: rgba(16,185,129,0.4); }
 
-  /* Income chart */
+  .project-card.hidden-project { border: 1px dashed rgba(16,185,129,0.12); }
+  .project-card.hidden-project .project-name { letter-spacing: 2px; }
+
+  /* Next step */
+  .project-next {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px;
+  }
+  .next-label { color: rgba(255,255,255,0.25); font-size: 10px; margin-bottom: 3px; }
+  .next-text { color: rgba(255,255,255,0.7); font-weight: 500; }
+  .blocker {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #f59e0b;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .blocker::before { content: '⚠'; flex-shrink: 0; }
+
+  /* Chart */
   .chart-card {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.06);
@@ -76,117 +140,33 @@
     padding: 16px;
     margin-top: 20px;
   }
-  .chart-card canvas { width: 100% !important; height: 160px !important; }
+  .chart-card canvas { width: 100% !important; height: 140px !important; }
 
-  /* Deadline banner */
-  .deadline-banner {
-    background: rgba(239,68,68,0.08);
-    border: 1px solid rgba(239,68,68,0.2);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
+  /* Streak */
+  .streak-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-top: 12px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 13px;
+    justify-content: space-between;
   }
-  .deadline-banner .days { font-weight: 800; color: #ef4444; font-size: 22px; }
-  .deadline-banner .text { color: rgba(255,255,255,0.6); }
-  .deadline-banner .text strong { color: #fff; }
+  .streak-left { display: flex; align-items: center; gap: 8px; }
+  .streak-fire { font-size: 20px; }
+  .streak-label { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .streak-num { font-size: 24px; font-weight: 900; color: #f59e0b; }
 
-  /* Updated timestamp */
-  .updated { text-align: center; font-size: 11px; color: rgba(255,255,255,0.15); margin-top: 24px; padding-bottom: 24px; }
+  /* Footer */
+  .updated { text-align: center; font-size: 10px; color: rgba(255,255,255,0.1); margin-top: 20px; }
 
-  /* PIN screen */
-  .pin-screen {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #0a0a0f;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 24px;
-  }
-  .pin-screen.hidden { display: none; }
-  .pin-logo { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, #00d4ff, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; }
-  .pin-dots { display: flex; gap: 12px; }
-  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); transition: all 0.2s; }
-  .pin-dot.filled { background: #00d4ff; border-color: #00d4ff; }
-  .pin-dot.error { background: #ef4444; border-color: #ef4444; animation: shake 0.4s; }
-  .pin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; }
-  .pin-btn {
-    width: 72px; height: 72px; border-radius: 50%;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    color: #fff; font-size: 28px; font-weight: 600;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent;
-  }
-  .pin-btn:active { background: rgba(255,255,255,0.15); transform: scale(0.95); }
-  .pin-btn.empty { visibility: hidden; }
-  .pin-btn.del { font-size: 18px; }
-  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  /* Animate in */
+  .fade-in { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+  @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(8px); } }
 </style>
 </head>
 <body>
-
-<!-- PIN Screen -->
-<div class="pin-screen" id="pinScreen">
-  <div class="pin-logo">M</div>
-  <div class="pin-dots" id="pinDots">
-    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-  </div>
-  <div class="pin-pad">
-    <div class="pin-btn" onclick="pinPress(1)">1</div>
-    <div class="pin-btn" onclick="pinPress(2)">2</div>
-    <div class="pin-btn" onclick="pinPress(3)">3</div>
-    <div class="pin-btn" onclick="pinPress(4)">4</div>
-    <div class="pin-btn" onclick="pinPress(5)">5</div>
-    <div class="pin-btn" onclick="pinPress(6)">6</div>
-    <div class="pin-btn" onclick="pinPress(7)">7</div>
-    <div class="pin-btn" onclick="pinPress(8)">8</div>
-    <div class="pin-btn" onclick="pinPress(9)">9</div>
-    <div class="pin-btn empty"></div>
-    <div class="pin-btn" onclick="pinPress(0)">0</div>
-    <div class="pin-btn del" onclick="pinDel()">⌫</div>
-  </div>
-</div>
-
-<script>
-const PIN_HASH = '7982';
-let pinInput = '';
-
-function pinPress(n) {
-  if (pinInput.length >= 4) return;
-  pinInput += n;
-  updateDots();
-  if (pinInput.length === 4) {
-    if (pinInput === PIN_HASH) {
-      sessionStorage.setItem('m_auth', '1');
-      document.getElementById('pinScreen').classList.add('hidden');
-    } else {
-      document.querySelectorAll('.pin-dot').forEach(d => d.classList.add('error'));
-      setTimeout(() => {
-        pinInput = '';
-        updateDots();
-        document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('error'));
-      }, 500);
-    }
-  }
-}
-
-function pinDel() {
-  pinInput = pinInput.slice(0, -1);
-  updateDots();
-}
-
-function updateDots() {
-  document.querySelectorAll('.pin-dot').forEach((d, i) => {
-    d.classList.toggle('filled', i < pinInput.length);
-  });
-}
-
-if (sessionStorage.getItem('m_auth') === '1') {
-  document.getElementById('pinScreen').classList.add('hidden');
-}
-</script>
-
 <div class="container">
 
   <!-- Header -->
@@ -195,29 +175,50 @@ if (sessionStorage.getItem('m_auth') === '1') {
       <div class="logo">M</div>
       <h1>МОНОПОЛИЕ</h1>
     </div>
-    <div class="live-dot"></div>
+    <div class="header-right" id="headerDate">—</div>
   </div>
 
-  <!-- Deadline banner -->
+  <!-- Focus: THE ONE THING -->
+  <div class="focus-card fade-in" id="focusCard" style="display:none">
+    <div class="focus-label">🎯 Фокус</div>
+    <div class="focus-question" id="focusQuestion"></div>
+    <div class="focus-answer" id="focusAnswer"></div>
+    <div class="focus-why" id="focusWhy"></div>
+  </div>
+
+  <!-- Deadline -->
   <div class="deadline-banner" id="deadlineBanner" style="display:none">
-    <div class="days" id="deadlineDays">—</div>
-    <div class="text"><strong id="deadlineName">—</strong><br><span id="deadlineText">—</span></div>
+    <div class="deadline-days" id="deadlineDays">—</div>
+    <div class="deadline-info">
+      <div class="deadline-name" id="deadlineName">—</div>
+      <div class="deadline-sub" id="deadlineText">—</div>
+    </div>
   </div>
 
   <!-- Total income -->
-  <div class="total-card">
-    <div class="total-label" id="totalLabel">Доход за март 2026</div>
-    <div class="total-amount" id="totalAmount">0 ₸</div>
-    <div class="total-sub" id="totalSub">Старт с нуля</div>
+  <div class="income-card fade-in" style="animation-delay:0.1s">
+    <div class="income-label" id="incomeLabel">—</div>
+    <div class="income-amount" id="incomeAmount">0 ₸</div>
+    <div class="income-goal" id="incomeGoal"></div>
+    <div class="income-bar"><div class="income-bar-fill" id="incomeBar" style="width:0%"></div></div>
   </div>
 
   <!-- Projects -->
   <div class="section-title">Проекты</div>
   <div id="projectsList"></div>
 
+  <!-- Streak -->
+  <div class="streak-card" id="streakCard" style="display:none">
+    <div class="streak-left">
+      <div class="streak-fire">🔥</div>
+      <div class="streak-label">Дней подряд с прогрессом</div>
+    </div>
+    <div class="streak-num" id="streakNum">0</div>
+  </div>
+
   <!-- Chart -->
   <div class="chart-card">
-    <div class="section-title" style="margin-bottom:8px">Доход по месяцам</div>
+    <div class="section-title" style="margin-bottom:8px">Доход</div>
     <canvas id="revenueChart"></canvas>
   </div>
 
@@ -230,10 +231,11 @@ const API = './api/data.json';
 let chartInstance = null;
 
 const STATUS_MAP = {
-  active: { label: 'Активен', class: 'status-active' },
-  dev: { label: 'В разработке', class: 'status-dev' },
-  deadline: { label: 'Дедлайн', class: 'status-deadline' },
-  paused: { label: 'Пауза', class: 'status-paused' }
+  active: { label: 'Активен', cls: 'status-active' },
+  dev: { label: 'В разработке', cls: 'status-dev' },
+  deadline: { label: 'Горит', cls: 'status-deadline' },
+  paused: { label: 'Пауза', cls: 'status-paused' },
+  hidden: { label: '▪▪▪', cls: 'status-hidden' }
 };
 
 function fmt(n) {
@@ -243,114 +245,129 @@ function fmt(n) {
 }
 
 function daysLeft(dateStr) {
-  const now = new Date();
-  const target = new Date(dateStr);
-  const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
-  return diff;
+  return Math.ceil((new Date(dateStr) - new Date()) / 86400000);
 }
 
 function pluralDays(n) {
   if (n <= 0) return 'Просрочено!';
-  const abs = Math.abs(n);
-  const last = abs % 10;
-  const tens = abs % 100;
-  if (last === 1 && tens !== 11) return abs + ' день';
-  if (last >= 2 && last <= 4 && (tens < 12 || tens > 14)) return abs + ' дня';
-  return abs + ' дней';
+  const last = n % 10, tens = n % 100;
+  if (last === 1 && tens !== 11) return n + ' день';
+  if (last >= 2 && last <= 4 && (tens < 12 || tens > 14)) return n + ' дня';
+  return n + ' дней';
 }
 
 async function load() {
   try {
-    const r = await fetch(API + '?t=' + Date.now());
-    const d = await r.json();
+    const d = await (await fetch(API + '?t=' + Date.now())).json();
     render(d);
   } catch (e) {
-    document.getElementById('totalLabel').textContent = 'Нет связи';
+    document.getElementById('incomeLabel').textContent = 'Нет связи';
   }
 }
 
 function render(d) {
-  // Total
-  document.getElementById('totalLabel').textContent = 'Доход за ' + d.month.toLowerCase();
-  document.getElementById('totalAmount').textContent = d.total.amount > 0 ? fmt(d.total.amount) + ' ₸' : '0 ₸';
+  // Date
+  const now = new Date();
+  const dayNames = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  document.getElementById('headerDate').innerHTML = dayNames[now.getDay()] + ', ' + now.toLocaleDateString('ru-RU', {day:'numeric', month:'short'});
 
-  if (d.total.amount > 0 && d.total.usd > 0) {
-    document.getElementById('totalSub').textContent = '≈ $' + d.total.usd;
-  } else {
-    document.getElementById('totalSub').textContent = 'Старт с нуля';
+  // Focus
+  if (d.focus) {
+    const fc = document.getElementById('focusCard');
+    fc.style.display = 'block';
+    document.getElementById('focusQuestion').textContent = d.focus.question;
+    document.getElementById('focusAnswer').textContent = d.focus.answer;
+    document.getElementById('focusWhy').textContent = d.focus.why;
   }
 
-  // Deadline banner
-  const deadlineProject = d.projects.find(p => p.deadline);
-  if (deadlineProject) {
-    const days = daysLeft(deadlineProject.deadline);
+  // Deadlines
+  const deadlines = d.projects.filter(p => p.deadline).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+  if (deadlines.length) {
+    const p = deadlines[0];
+    const days = daysLeft(p.deadline);
     const banner = document.getElementById('deadlineBanner');
     banner.style.display = 'flex';
+    if (days <= 1) banner.classList.add('deadline-urgent');
     document.getElementById('deadlineDays').textContent = days <= 0 ? '!' : days;
-    document.getElementById('deadlineName').textContent = deadlineProject.name;
+    document.getElementById('deadlineName').textContent = p.name;
     document.getElementById('deadlineText').textContent = days <= 0 ? 'Дедлайн прошёл!' : pluralDays(days) + ' до дедлайна';
   }
 
+  // Income
+  document.getElementById('incomeLabel').textContent = d.month;
+  document.getElementById('incomeAmount').textContent = d.total.amount > 0 ? fmt(d.total.amount) + ' ₸' : '0 ₸';
+
+  const goal = 1000000;
+  const pct = Math.min((d.total.amount / goal) * 100, 100);
+  document.getElementById('incomeGoal').textContent = d.total.amount > 0 ? fmt(d.total.amount) + ' / 1M ₸' : 'Цель: 1M ₸ / мес';
+  document.getElementById('incomeBar').style.width = Math.max(pct, 0.5) + '%';
+
   // Projects
   const list = document.getElementById('projectsList');
-  list.innerHTML = d.projects.map(p => {
-    const status = STATUS_MAP[p.status] || STATUS_MAP.active;
+  list.innerHTML = d.projects.map((p, i) => {
+    const s = STATUS_MAP[p.status] || STATUS_MAP.active;
+    const isHidden = p.status === 'hidden';
+    const ownerHtml = p.owner ? `<span class="owner-tag">${p.owner}</span>` : '';
+
+    let nextHtml = '';
+    if (p.next && !isHidden) {
+      nextHtml = `<div class="project-next">
+        <div class="next-label">Следующий шаг</div>
+        <div class="next-text">${p.next}</div>
+        ${p.blocker ? `<div class="blocker">${p.blocker}</div>` : ''}
+      </div>`;
+    }
+
     return `
-    <div class="project-card">
-      <div class="project-icon" style="background:${p.color}15">
-        ${p.icon}
+    <div class="project-card ${isHidden ? 'hidden-project' : ''} fade-in" style="animation-delay:${0.15 + i * 0.05}s">
+      <div class="project-top">
+        <div class="project-icon" style="background:${p.color}${isHidden ? '08' : '12'}">${p.icon}</div>
+        <div class="project-info">
+          <div class="project-name">${p.name}</div>
+          <div class="project-meta">
+            <span class="project-desc">${p.desc}</span>
+            ${ownerHtml}
+          </div>
+        </div>
+        <div class="project-amount" style="color:${p.color}">${p.amount > 0 ? fmt(p.amount) + ' ₸' : '0'}</div>
       </div>
-      <div class="project-info">
-        <div class="project-name">${p.name}</div>
-        <div class="project-desc">${p.desc}</div>
-      </div>
-      <div class="project-right">
-        <div class="project-amount" style="color:${p.color}">${p.amount > 0 ? fmt(p.amount) + ' ₸' : '0 ₸'}</div>
-        <span class="project-status ${status.class}">${status.label}</span>
-      </div>
+      ${nextHtml}
     </div>`;
   }).join('');
+
+  // Streak
+  if (d.streak !== undefined) {
+    document.getElementById('streakCard').style.display = 'flex';
+    document.getElementById('streakNum').textContent = d.streak;
+  }
 
   // Chart
   renderChart(d.months);
 
   // Updated
-  const upd = new Date(d.updated);
-  document.getElementById('updatedTime').textContent = 'Обновлено ' + upd.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  document.getElementById('updatedTime').textContent = 'обновлено ' + new Date(d.updated).toLocaleString('ru-RU', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
 }
 
 function renderChart(months) {
   if (chartInstance) chartInstance.destroy();
   const ctx = document.getElementById('revenueChart').getContext('2d');
-
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: months.map(m => m.month),
       datasets: [{
         data: months.map(m => m.amount),
-        backgroundColor: months.map((_, i) => i === months.length - 1 ? '#00d4ff' : 'rgba(0,212,255,0.3)'),
-        borderRadius: 8,
-        barThickness: months.length === 1 ? 60 : undefined
+        backgroundColor: months.map((_, i) => i === months.length - 1 ? '#00d4ff' : 'rgba(0,212,255,0.25)'),
+        borderRadius: 6,
+        barThickness: months.length === 1 ? 48 : undefined
       }]
     },
     options: {
       responsive: true,
       plugins: { legend: { display: false } },
       scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 11 } }
-        },
-        y: {
-          grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: {
-            color: 'rgba(255,255,255,0.3)',
-            font: { size: 11 },
-            callback: v => v >= 1000 ? fmt(v) : v
-          },
-          beginAtZero: true
-        }
+        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.25)', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 10 }, callback: v => v >= 1000 ? fmt(v) : v }, beginAtZero: true }
       }
     }
   });
